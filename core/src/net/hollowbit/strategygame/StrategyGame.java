@@ -20,9 +20,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 public class StrategyGame extends ApplicationAdapter implements InputProcessor {
 	
 	public static final int BLACK = Color.argb8888(0, 0, 0, 1);
-	public static final int RED = Color.argb8888(1, 0, 0, 1);
-	public static final int GREEN = Color.argb8888(0, 1, 0, 1);
-	public static final int BLUE = Color.argb8888(0, 0, 1, 1);
+	public static final int WHITE = Color.argb8888(1, 1, 1, 1);
 	
 	SpriteBatch batch;
 	
@@ -30,6 +28,7 @@ public class StrategyGame extends ApplicationAdapter implements InputProcessor {
 	
 	TextureRegion grid;
 	Pixmap hexMap;
+	Texture hexMapImage;
 	
 	OrthographicCamera cam;
 	ScreenViewport viewport;
@@ -69,6 +68,7 @@ public class StrategyGame extends ApplicationAdapter implements InputProcessor {
 		fixBleeding(grid);
 		hexMap = new Pixmap(Gdx.files.internal("hexmap.png"));
 		
+		//Load tiles
 		tileMap = new HashMap<Integer, TextureRegion>();
 		TextureRegion[][] hexTileMap = TextureRegion.split(new Texture("hextilemap.png"), 64, 65);
 		for (int y = 0; y < hexTileMap.length; y++) {
@@ -86,7 +86,7 @@ public class StrategyGame extends ApplicationAdapter implements InputProcessor {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		if (Gdx.input.isTouched()) {
@@ -104,8 +104,10 @@ public class StrategyGame extends ApplicationAdapter implements InputProcessor {
 			}
 		}
 		
+		//Draw grid overlay
 		batch.draw(grid, 0, 0);
 		
+		//Draw fps
 		Vector3 fpsPosition = cam.unproject(new Vector3(10, 10, 0));
 		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), fpsPosition.x, fpsPosition.y);
 		
@@ -129,35 +131,32 @@ public class StrategyGame extends ApplicationAdapter implements InputProcessor {
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		if (new Vector2(screenX, screenY).dst(touchX, touchY) < 15) {
 			Vector3 position = cam.unproject(new Vector3(screenX, screenY, 0));
+			
+			//Find array position of tile being interacted with
 			int x = (int) (position.x / 49);
 			int y = 11 - (int) ((position.y - (x % 2 == 1 ? 32:0)) / 64) - 1 - (x % 2 == 1 ? 1:0);
 			
+			//Find coordinate being clicked within that position
 			int hexMapX = (int) (position.x % 49);
 			int hexMapY = (int) ((position.y - (x % 2 == 1 ? 32:0)) % 64);
 			
+			//Depending on the color, change index
 			int color = hexMap.getPixel(hexMapX, hexMapY);
-			
-			if (color == RED) {
-				x++;
-				y--;
-				System.out.println("red");
-			} else if (color == GREEN) {
-				x++;
-				y++;
-				System.out.println("green");
-			} else if (color == BLUE) {
+			if (color == WHITE) {
 				x--;
 				y += (x % 2 == 0 ? 1:0);
-				System.out.println("blue");
+				System.out.println("white");
 			} else if (color == BLACK) {
 				x--;
 				y -= (x % 2 == 1 ? 1:0);
 				System.out.println("black");
 			}
 			
+			//Make sure it isn't out of bounds
 			if (x < 0 || x >= map[0].length || y < 0 || y >= map.length)
 				return false;
 			
+			//Toggle hex position
 			map[y][x] = (map[y][x] == 1 ? 0 : 1);
 			return true;
 		}
