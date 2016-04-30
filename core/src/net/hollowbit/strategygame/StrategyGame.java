@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -67,6 +68,7 @@ public class StrategyGame extends ApplicationAdapter implements InputProcessor {
 		grid = new TextureRegion(new Texture("hexgrid.png"));
 		fixBleeding(grid);
 		hexMap = new Pixmap(Gdx.files.internal("hexmap.png"));
+		hexMapImage = new Texture("hexmap.png");
 		
 		//Load tiles
 		tileMap = new HashMap<Integer, TextureRegion>();
@@ -101,6 +103,8 @@ public class StrategyGame extends ApplicationAdapter implements InputProcessor {
 		for (int y = 0; y < 11; y++) {
 			for (int x = 0; x < 14; x++) {
 				batch.draw(tileMap.get(map[11 - y - 1][x]), x * 49, y * 64 - (x % 2 == 1 ? 32:0));
+				if (Gdx.input.isKeyPressed(Keys.SPACE))
+					batch.draw(hexMapImage, x * 49, y * 64 - (x % 2 == 1 ? 32:0));
 			}
 		}
 		
