@@ -1,0 +1,55 @@
+package net.hollowbit.strategygame.gamecomponents;
+
+import java.util.ArrayList;
+
+import com.badlogic.gdx.graphics.Color;
+
+import net.hollowbit.strategygame.units.Unit;
+
+public class Player {
+
+	private String name;
+	private ArrayList<Unit> units;
+	private Color color;
+	
+	public Player (String name, Color color) {
+		this.name = name;
+		this.color = color;
+		this.units = new ArrayList<Unit>();
+	}
+	
+	//Check if a particular unit belongs to this player
+	public boolean doesUnitBelongToPlayer (Unit unit) {
+		for (Unit unitInList : units) {
+			if (unitInList == unit)
+				return true;
+		}
+		return false;
+	}
+	
+	//Checks if unit is an enemy
+	public boolean isUnitAnEnemy (Unit unit) {
+		return !doesUnitBelongToPlayer(unit);
+	}
+	
+	public String getName () {
+		return name;
+	}
+	
+	public Color getColor () {
+		return color;
+	}
+	
+	public void addUnit (Unit unit) {
+		units.add(unit);
+	}
+	
+	public void removeUnit (Unit unit) {
+		units.remove(unit);
+	}
+	
+	public ArrayList<Unit> getUnits () {
+		return units;
+	}
+	
+}

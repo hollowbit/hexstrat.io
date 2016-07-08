@@ -10,6 +10,8 @@ public class DesktopLauncher {
 		config.vSyncEnabled = false;
 		config.foregroundFPS = 0;
 		config.backgroundFPS = 0;
+		config.width = 1280;
+		config.height = 720;
 		new LwjglApplication(new StrategyGame(), config);
 	}
 }
