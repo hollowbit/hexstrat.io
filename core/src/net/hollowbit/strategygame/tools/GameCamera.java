@@ -13,6 +13,7 @@ import net.hollowbit.strategygame.world.Hex;
 public class GameCamera {
 	
 	public static final float UNITS_PER_PIXEL = 0.75f;
+	private static final int LERP_MULTIPLIER = 4;
 	
 	private OrthographicCamera cam;
 	private ScreenViewport viewport;
@@ -43,15 +44,17 @@ public class GameCamera {
 			if (unitToFocusOn != null)
 				cam.position.set(unitToFocusOn.getX() + Hex.SIZE / 2, unitToFocusOn.getY() + Hex.SIZE / 2, 0);
 		} else {
-			cam.position.lerp(new Vector3(goal.x + Hex.SIZE / 2, goal.y + Hex.SIZE / 2, 0), deltatime);
+			cam.position.lerp(new Vector3(goal.x + Hex.SIZE / 2, goal.y + Hex.SIZE / 2, 0), deltatime * LERP_MULTIPLIER);
 			if (cam.position.epsilonEquals(goal.x + Hex.SIZE / 2, goal.y + Hex.SIZE / 2, 0, 1f)) {
 				goal = null;
 			}
 		}
 		
 		//Draw camera
-		if (Gdx.input.isTouched())
+		if (Gdx.input.isTouched()) {
+			goal = null;
 			cam.translate(-Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
+		}
 		
 		/*if (ArchipeloClient.getGame().getWorld() != null && ArchipeloClient.getGame().getWorld().getMap() != null) {
 			//If map width is more than screen width

@@ -8,8 +8,10 @@ import net.hollowbit.strategygame.world.World;
 
 public class Village extends Unit {
 	
+	private static final int MAX_HEALTH = 16;
+	
 	public Village(World world, Player player, Hex hex) {
-		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("village"), StrategyGame.getGame().getAssetManager().getTexture("village-overlay"), 16);
+		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("village"), StrategyGame.getGame().getAssetManager().getTexture("village-overlay"), MAX_HEALTH);
 	}
 
 	@Override

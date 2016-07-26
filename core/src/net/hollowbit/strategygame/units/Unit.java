@@ -19,6 +19,7 @@ public abstract class Unit {
 	World world;
 	Player player;
 	int health;
+	int maxHealth;
 	
 	Texture image;
 	Texture overlay;
@@ -36,6 +37,9 @@ public abstract class Unit {
 		this.image = image;
 		this.overlay = overlay;
 		this.health = health;
+		this.maxHealth = health;
+		
+		hex.setUnitOnHex(this);
 		
 		player.addUnit(this);
 	}
@@ -90,6 +94,14 @@ public abstract class Unit {
 	
 	public Hex getHex () {
 		return hex;
+	}
+	
+	public int getHealth () {
+		return health;
+	}
+	
+	public int getMaxHealth () {
+		return maxHealth;
 	}
 	
 	public Player getPlayer () {

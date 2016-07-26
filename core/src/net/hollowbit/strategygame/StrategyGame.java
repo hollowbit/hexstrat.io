@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import net.hollowbit.strategygame.screens.GameScreen;
 import net.hollowbit.strategygame.tools.AssetManager;
@@ -26,6 +27,8 @@ public class StrategyGame extends Game {
 	private GameCamera gameCamera;
 	private UiCamera uiCamera;
 	private SpriteBatch batch;
+	
+	private Skin skin;
 		
 	@Override
 	public void create () {
@@ -36,10 +39,13 @@ public class StrategyGame extends Game {
 		uiCamera = new UiCamera();
 		batch = new SpriteBatch();
 		
+		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+		
 		//Load textures
 		HexType.loadTextures();
 		assetManager.putTexture("blank", new Texture("blank.png"));
 		assetManager.putTexture("blank-hex", new Texture("blank_hex.png"));
+		assetManager.putTexture("selected-hex-border", new Texture("selected_hex_border.png"));
 		
 		  //Unit textures
 		assetManager.putTexture("village", new Texture("units/village.png"));
@@ -97,6 +103,10 @@ public class StrategyGame extends Game {
 	
 	public AssetManager getAssetManager () {
 		return assetManager;
+	}
+	
+	public Skin getSkin () {
+		return skin;
 	}
 	
 	public void fixBleeding (TextureRegion region) {

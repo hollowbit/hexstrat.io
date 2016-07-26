@@ -31,21 +31,21 @@ public class HexTouchChecker {
 		if (new Vector2(worldX, worldY).dst(touchX, touchY) < 15) {
 			
 			//Find array position of tile being interacted with
-			int x = (int) (worldX / 49);
-			int y = 11 - (int) ((worldY - (x % 2 == 1 ? 32:0)) / 64) - 1 - (x % 2 == 1 ? 1:0);
+			int x = (int) (worldX / Hex.OVERLAP_SIZE);
+			int y = (int) ((worldY + (x % 2 == 1 ? Hex.SIZE / 2:0)) / Hex.SIZE);
 			
 			//Find coordinate being clicked within that position
-			int hexMapX = (int) (worldX % 49);
-			int hexMapY = (int) ((worldY - (x % 2 == 1 ? 32:0)) % 64);
+			int hexMapX = (int) (worldX % Hex.OVERLAP_SIZE);
+			int hexMapY = (int) ((worldY - (x % 2 == 1 ? Hex.SIZE / 2:0)) % Hex.SIZE);
 			
 			//Depending on the color, change index
 			int color = hexMap.getPixel(hexMapX, hexMapY);
 			if (color == WHITE) {
 				x--;
-				y += (x % 2 == 0 ? 1:0);
+				y -= (x % 2 == 0 ? 1:0);
 			} else if (color == BLACK) {
 				x--;
-				y -= (x % 2 == 1 ? 1:0);
+				y += (x % 2 == 1 ? 1:0);
 			}
 			
 			//Make sure it isn't out of bounds
