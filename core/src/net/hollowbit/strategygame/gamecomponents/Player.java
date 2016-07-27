@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.graphics.Color;
 
 import net.hollowbit.strategygame.units.Unit;
+import net.hollowbit.strategygame.units.Village;
 
 public class Player {
 
@@ -50,6 +51,10 @@ public class Player {
 	
 	public ArrayList<Unit> getUnits () {
 		return units;
+	}
+	
+	public Village getVillage () {
+		return (Village) units.get(0);//First unit index should be a village
 	}
 	
 }

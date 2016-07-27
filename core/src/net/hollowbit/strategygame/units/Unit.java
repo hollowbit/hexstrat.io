@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.hollowbit.strategygame.gamecomponents.Player;
+import net.hollowbit.strategygame.gamecomponents.TurnType;
 import net.hollowbit.strategygame.screens.GameScreen;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.World;
@@ -20,6 +21,8 @@ public abstract class Unit {
 	Player player;
 	int health;
 	int maxHealth;
+	TurnType defaultTurnType;
+	TurnType[] turnTypes;
 	
 	Texture image;
 	Texture overlay;
@@ -48,8 +51,12 @@ public abstract class Unit {
 		damage(hex.getType().damage);
 	}
 	
-	public void damage (int amount) {
+	public boolean damage (int amount) {
 		health += amount;
+		if (health <= 0)
+			return true;
+		else 
+			return false;
 	}
 	
 	public void update (float deltaTime) {
@@ -108,11 +115,18 @@ public abstract class Unit {
 		return player;
 	}
 	
-	public boolean isMovable () {
-		return getMoveSpeed() > 0;
+	public TurnType getDefaultTurnType () {
+		return defaultTurnType;
 	}
 	
-	public abstract void focusedOn (GameScreen gameScreen);
+	public TurnType[] getTurnTypes () {
+		return turnTypes;
+	}
+	
+	public void focusedOn (GameScreen gameScreen) {
+		defaultTurnType.initiate(gameScreen);
+	}
+	
 	public int getVisibilityRange () {return 2;}
 	public boolean isTower () {return false;}
 	public int getMoveSpeed () {return 1;}

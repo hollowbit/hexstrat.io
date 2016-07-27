@@ -93,11 +93,16 @@ public class Hex {
 		return hexes;
 	}
 	
+	public OverlayColor getOverlayColor () {
+		return overlay;
+	}
+	
 	public enum OverlayColor {
 		NONE(1, 1, 1, 1),
 		VALID(0, 0, 1, 0.7f),
 		INVALID(1, 0, 0, 0.7f),
-		FOG(0.2f, 0.2f, 0.2f, 0.5f);
+		FOG(0.2f, 0.2f, 0.2f, 0.5f),
+		ATTACK(1, 0.5f, 0, 0.7f);
 		
 		private Color color;
 		

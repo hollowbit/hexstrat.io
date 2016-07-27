@@ -39,7 +39,7 @@ public class StrategyGame extends Game {
 		uiCamera = new UiCamera();
 		batch = new SpriteBatch();
 		
-		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 		
 		//Load textures
 		HexType.loadTextures();
@@ -50,6 +50,8 @@ public class StrategyGame extends Game {
 		  //Unit textures
 		assetManager.putTexture("village", new Texture("units/village.png"));
 		assetManager.putTexture("village-overlay", new Texture("units/village_overlay.png"));
+		assetManager.putTexture("horseman", new Texture("units/horseman.png"));
+		assetManager.putTexture("horseman-overlay", new Texture("units/horseman_overlay.png"));
 		
 		screenManager = new ScreenManager(new GameScreen());
 	}
@@ -107,6 +109,10 @@ public class StrategyGame extends Game {
 	
 	public Skin getSkin () {
 		return skin;
+	}
+	
+	public SpriteBatch getBatch () {
+		return batch;
 	}
 	
 	public void fixBleeding (TextureRegion region) {
