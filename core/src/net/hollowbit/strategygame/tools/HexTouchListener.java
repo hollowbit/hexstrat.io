@@ -5,6 +5,6 @@ import net.hollowbit.strategygame.world.Hex;
 
 public interface HexTouchListener {
 	
-	public abstract void hexTouched (Hex hex, GameScreen gameScreen);
+	public abstract boolean hexTouched (Hex hex, GameScreen gameScreen);
 	
 }

@@ -23,12 +23,16 @@ public class BuildTurnType extends TurnType {
 
 	@Override
 	public void initiate (GameScreen gameScreen) {
-		if (usable())
+		if (usable() && !initiated) {
+			initiated = true;
 			gameScreen.openBuildWindow(village);
+		}
 	}
 
 	@Override
-	public void dispose(GameScreen gameScreen) {}
+	public void dispose(GameScreen gameScreen) {
+		initiated = false;
+	}
 
 	@Override
 	public void turnStart() {

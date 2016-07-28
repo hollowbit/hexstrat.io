@@ -230,7 +230,7 @@ public class GameScreen extends Screen implements InputProcessor {
 		//Depending on whether the village is ready to build something new, zoom to it, or the last used unit
 		if (!currentPlayer.getVillage().isDoneBuilding())
 			//If no unit was last used, zoom to village, but don't select it
-			if(player1.getLastMovedUnit() != null)
+			if (player1.getLastMovedUnit() != null)
 				selectUnit(currentPlayer.getLastMovedUnit());
 			else
 				StrategyGame.getGame().getGameCamera().setGoal(new Vector2(currentPlayer.getVillage().getX(), currentPlayer.getVillage().getY()));
@@ -252,6 +252,7 @@ public class GameScreen extends Screen implements InputProcessor {
 			}
 			for (TextButton turnTypeButton : turnTypeButtons)
 				turnTypeButton.remove();
+			turnTypeButtons.clear();
 			currentPlayer.setLastMovedUnit(selectedUnit);
 			selectedUnit = null;
 		}
@@ -321,14 +322,18 @@ public class GameScreen extends Screen implements InputProcessor {
 		Hex hexTouched = hexTouchChecker.getTouchedHex((int) touchCoords.x, (int) touchCoords.y, world.getMap());
 		//If the touched hex has a unit, set it as selected
 		if (hexTouched != null) {
-			if (hexTouched.getUnitOnHex() != null && hexTouched.getUnitOnHex() != selectedUnit) {
-				selectUnit(hexTouched.getUnitOnHex());
-				//return false;//If changing selected unit, avoid looping through listeners
+			
+			boolean hexHandled = false;
+			//Loop through each listener and loop
+			for (HexTouchListener hexTouchListener : hexTouchListeners) {
+				if (hexTouchListener.hexTouched(hexTouched, this))
+					hexHandled = true;
 			}
 			
-			//Loop through each listener and loop
-			for (HexTouchListener hexTouchListener : hexTouchListeners)
-				hexTouchListener.hexTouched(hexTouched, this);
+			if (!hexHandled) {
+				if (hexTouched.getUnitOnHex() != null && hexTouched.getUnitOnHex() != selectedUnit)
+					selectUnit(hexTouched.getUnitOnHex());
+			}
 		}
 		return false;
 	}

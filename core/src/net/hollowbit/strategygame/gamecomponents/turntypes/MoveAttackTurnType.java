@@ -13,6 +13,7 @@ import net.hollowbit.strategygame.world.Hex.OverlayColor;
 public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 	
 	private int movesLeft;
+	private boolean attacked;
 	
 	public MoveAttackTurnType (Unit unit) {
 		super(unit);
@@ -26,7 +27,8 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 
 	@Override
 	public void initiate (GameScreen gameScreen) {
-		if (usable()) {
+		if (usable() && !initiated) {
+			initiated = true;
 			gameScreen.addHexTouchListener(this);
 			initiateSecondTime(gameScreen);
 		}
@@ -38,7 +40,10 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 				if (unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {//If unit is on same team, disallow moving there
 					hex.setOverlayColor(OverlayColor.INVALID);
 				} else {
-					hex.setOverlayColor(OverlayColor.ATTACK);
+					if (attacked)//If this unit already attacked, then don't let it attack again
+						hex.setOverlayColor(OverlayColor.INVALID);
+					else
+						hex.setOverlayColor(OverlayColor.ATTACK);
 				}
 			} else {
 				if(hex.getType().collidable)
@@ -51,15 +56,15 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 
 	@Override
 	public void dispose (GameScreen gameScreen) {
+		initiated = false;
 		gameScreen.removeHexTouchListener(this);
 		gameScreen.resetFog();
 	}
 
 	@Override
-	public void hexTouched (Hex hex, GameScreen gameScreen) {
+	public boolean hexTouched (Hex hex, GameScreen gameScreen) {
 		switch(hex.getOverlayColor()) {
 		case ATTACK:
-			System.out.println("test");
 			//Do damage based on unit type
 			Unit attackedUnit = hex.getUnitOnHex();
 			boolean unitKilled = false;
@@ -80,12 +85,13 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 			if (unitKilled && unit.getAttackRange() <= 1)
 				unit.move(hex);
 			
+			attacked = true;
 			break;
 		case VALID:
 			unit.move(hex);
 			break;
 		default://Do nothing if not one of the above
-			return;
+			return false;
 		}
 		movesLeft--;
 		gameScreen.resetFog();
@@ -95,10 +101,12 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 			unit.setFinishedTurn(true);
 			gameScreen.resetUnitMoveButtons();
 		}
+		return true;
 	}
 
 	@Override
 	public void turnStart() {
+		attacked = false;
 		this.movesLeft = unit.getMoveSpeed();
 	}
 

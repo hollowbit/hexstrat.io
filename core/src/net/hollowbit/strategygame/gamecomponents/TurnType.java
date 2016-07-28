@@ -9,9 +9,11 @@ public abstract class TurnType {
 	
 	//Determine what to do on a player's turn
 	protected Unit unit;
+	protected boolean initiated;
 	
 	public TurnType (Unit unit) {
 		this.unit = unit;
+		initiated = false;
 	}
 	
 	public abstract TextButton getTurnButton();
