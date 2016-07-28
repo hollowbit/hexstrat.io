@@ -4,7 +4,10 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import net.hollowbit.strategygame.gamecomponents.Player;
 import net.hollowbit.strategygame.units.Unit;
+import net.hollowbit.strategygame.units.Village;
+import net.hollowbit.strategygame.world.Hex.OverlayColor;
 
 public class World {
 	
@@ -26,10 +29,12 @@ public class World {
 			unit.update(deltaTime);
 	}
 	
-	public void render (SpriteBatch batch) {
+	public void render (SpriteBatch batch, Player currentPlayer) {
 		map.render(batch);
-		for (Unit unit : units)
-			unit.render(batch);
+		for (Unit unit : units) {
+			if (unit.getHex().getOverlayColor() != OverlayColor.FOG || unit instanceof Village)//Only draw enemies in fog if they are villages
+				unit.render(batch);
+		}
 	}
 	
 	public void addUnit (Unit unit) {

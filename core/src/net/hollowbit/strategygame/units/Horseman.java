@@ -19,7 +19,7 @@ public class Horseman extends Unit {
 	}
 	
 	@Override
-	public float getSwordDamage() {
+	public int getSwordsmanDamage() {
 		return 3;
 	}
 	

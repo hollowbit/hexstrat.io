@@ -77,7 +77,7 @@ public class Hex {
 		//Get rows after it
 		int top = range;
 		for (int col = 1; col <= range; col++) {
-			if (col % 2 == 0)//If col is odd, subtract y
+			if (col % 2 == (x % 2 == 0 ? 1:0))//If col is even, subtract y
 				top--;
 			for (int row = -top; row < range * 2 - col + 1 - top; row++) {
 				//Get from right
@@ -99,10 +99,10 @@ public class Hex {
 	
 	public enum OverlayColor {
 		NONE(1, 1, 1, 1),
-		VALID(0, 0, 1, 0.7f),
-		INVALID(1, 0, 0, 0.7f),
+		VALID(0, 0, 1, 0.5f),
+		INVALID(1, 0, 0, 0.5f),
 		FOG(0.2f, 0.2f, 0.2f, 0.5f),
-		ATTACK(1, 0.5f, 0, 0.7f);
+		ATTACK(1, 0.5f, 0, 0.5f);
 		
 		private Color color;
 		

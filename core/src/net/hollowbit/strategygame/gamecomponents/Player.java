@@ -12,6 +12,7 @@ public class Player {
 	private String name;
 	private ArrayList<Unit> units;
 	private Color color;
+	private Unit lastMovedUnit;
 	
 	public Player (String name, Color color) {
 		this.name = name;
@@ -49,12 +50,27 @@ public class Player {
 		units.remove(unit);
 	}
 	
+	public void setLastMovedUnit (Unit unit) {
+		this.lastMovedUnit = unit;
+	}
+	
+	public Unit getLastMovedUnit () {
+		return lastMovedUnit;
+	}
+	
 	public ArrayList<Unit> getUnits () {
 		return units;
 	}
 	
 	public Village getVillage () {
 		return (Village) units.get(0);//First unit index should be a village
+	}
+	
+	public int getProduction () {
+		int production = 0;
+		for (Unit unit : units)
+			production += unit.getProduction();
+		return production;
 	}
 	
 }

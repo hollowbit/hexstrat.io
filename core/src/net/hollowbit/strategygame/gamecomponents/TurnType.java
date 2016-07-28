@@ -15,7 +15,9 @@ public abstract class TurnType {
 	}
 	
 	public abstract TextButton getTurnButton();
+	public abstract void turnStart();
 	public abstract void initiate(GameScreen gameScreen);
 	public abstract void dispose(GameScreen gameScreen);
+	public abstract boolean usable();
 	
 }
