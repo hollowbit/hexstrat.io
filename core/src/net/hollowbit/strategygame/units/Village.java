@@ -2,7 +2,9 @@ package net.hollowbit.strategygame.units;
 
 import net.hollowbit.strategygame.StrategyGame;
 import net.hollowbit.strategygame.gamecomponents.Player;
+import net.hollowbit.strategygame.gamecomponents.TurnType;
 import net.hollowbit.strategygame.gamecomponents.turntypes.BuildTurnType;
+import net.hollowbit.strategygame.gamecomponents.turntypes.ChooseSpawnTurnType;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.World;
 
@@ -12,13 +14,16 @@ public class Village extends Unit {
 	
 	private int buildProdLeft = 1;
 	private BuildType unitBeingBuilt;
+	private Hex spawn;
 	
 	private boolean firstUnitBuilt = false;//If false, make all unit purchases only cost 1
 	
 	public Village(World world, Player player, Hex hex) {
 		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("village"), StrategyGame.getGame().getAssetManager().getTexture("village-overlay"), MAX_HEALTH);
 		this.defaultTurnType = new BuildTurnType(this);
+		this.turnTypes = new TurnType[]{new ChooseSpawnTurnType(this)};
 		this.unitBeingBuilt = null;
+		this.spawn = null;
 	}
 	
 	@Override
@@ -31,11 +36,16 @@ public class Village extends Unit {
 		if (isDoneBuilding() && unitBeingBuilt != null) {
 			//Find a suitable place to spawn unit
 			boolean spotFound = false;
-			for (Hex hex : hex.getSurroundingHexesInRange(1)) {
-				if (hex.getUnitOnHex() == null) {
-					spawnUnit(hex);
-					spotFound = true;
-					break;
+			if (spawn != null) {
+				spawnUnit(spawn);
+				spotFound = true;
+			} else {
+				for (Hex hex : hex.getSurroundingHexesInRange(1)) {
+					if (hex.getUnitOnHex() == null) {
+						spawnUnit(hex);
+						spotFound = true;
+						break;
+					}
 				}
 			}
 			
@@ -93,6 +103,10 @@ public class Village extends Unit {
 	
 	public boolean isFirstBuild () {
 		return !firstUnitBuilt;
+	}
+	
+	public void setSpawn (Hex spawn) {
+		this.spawn = spawn;
 	}
 	
 	@Override

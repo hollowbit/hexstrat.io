@@ -57,6 +57,8 @@ public class GameScreen extends Screen implements InputProcessor {
 	
 	boolean windowOpen = false;
 	
+	TurnType selectedTurnType = null;
+	
 	public GameScreen () {
 		stage = new Stage(StrategyGame.getGame().getUiCamera().getScreenViewport(), StrategyGame.getGame().getBatch());
 		world = new World("grasslands");
@@ -112,6 +114,7 @@ public class GameScreen extends Screen implements InputProcessor {
 	}
 	
 	private void selectUnit (Unit unit) {
+		System.out.println("gamescreen.java pleb");
 		//Dispose of current unit turn types before setting a new one
 		disposeOfSelectedUnit();
 		selectedUnit = unit;
@@ -147,8 +150,12 @@ public class GameScreen extends Screen implements InputProcessor {
 			turnTypeButton.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
-					if (!windowOpen)
+					if (!windowOpen) {
+						if (selectedTurnType != null)
+							selectedTurnType.dispose(gameScreen);
+						selectedTurnType = turnType;
 						turnType.initiate(gameScreen);
+					}
 					super.clicked(event, x, y);
 				}
 			});
@@ -329,8 +336,9 @@ public class GameScreen extends Screen implements InputProcessor {
 				if (hexTouchListener.hexTouched(hexTouched, this))
 					hexHandled = true;
 			}
-			
-			if (!hexHandled) {
+			System.out.println("GameScreen.java test" + hexHandled);
+			if (!hexHandled || (hexTouched.getUnitOnHex() != null && currentPlayer.doesUnitBelongToPlayer(hexTouched.getUnitOnHex()))) {
+				System.out.println("GameScreen.java TEstrere");
 				if (hexTouched.getUnitOnHex() != null && hexTouched.getUnitOnHex() != selectedUnit)
 					selectUnit(hexTouched.getUnitOnHex());
 			}

@@ -41,7 +41,7 @@ public class Hex {
 		if (overlay != OverlayColor.NONE) {
 			batch.setColor(overlay.getColor());
 			batch.draw(StrategyGame.getGame().getAssetManager().getTexture("blank-hex"), x, y);
-			batch.setColor(Color.WHITE);
+			batch.setColor(1, 1, 1, 1);
 		}
 	}
 	
@@ -99,10 +99,10 @@ public class Hex {
 	
 	public enum OverlayColor {
 		NONE(1, 1, 1, 1),
-		VALID(0, 0, 1, 0.5f),
-		INVALID(1, 0, 0, 0.5f),
+		VALID(0, 0, 1, 0.7f),
+		INVALID(1, 0, 0, 0.7f),
 		FOG(0.2f, 0.2f, 0.2f, 0.5f),
-		ATTACK(1, 0.5f, 0, 0.5f);
+		ATTACK(1, 0.5f, 0, 0.7f);
 		
 		private Color color;
 		
