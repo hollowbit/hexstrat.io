@@ -68,6 +68,7 @@ public class BuildWindow extends Window {
 				gameScreen.closeWindow();
 				window.remove();
 				village.setFinishedTurn(true);
+				gameScreen.selectNextUnit();
 				gameScreen.resetUnitMoveButtons();
 				super.clicked(event, x, y);
 			}

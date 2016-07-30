@@ -95,11 +95,13 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 		}
 		movesLeft--;
 		gameScreen.resetFog();
-		if (movesLeft > 0) {
+		if (usable()) {
 			initiateSecondTime(gameScreen);
 		} else {
+			System.out.println("MoveAttackTurnType.java pleborino");
 			unit.setFinishedTurn(true);
 			gameScreen.resetUnitMoveButtons();
+			gameScreen.selectNextUnit();
 		}
 		return true;
 	}

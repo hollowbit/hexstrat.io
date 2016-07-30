@@ -53,6 +53,7 @@ public class GameScreen extends Screen implements InputProcessor {
 	boolean endTurnFlag = false;;
 	
 	TextButton endTurnButton;
+	
 	BuildWindow buildWindow = null;
 	
 	boolean windowOpen = false;
@@ -101,16 +102,18 @@ public class GameScreen extends Screen implements InputProcessor {
 		if (endTurnFlag)
 			endTurn();
 		
-		if (selectedUnit.isFinishedTurn()) {
-			for (Unit unit : currentPlayer.getUnits()) {
-				if (!unit.isFinishedTurn()) {
-					selectUnit(unit);
-				}
-			}
-		}
-		
 		stage.act();
 		world.update(deltaTime);
+	}
+	
+	public void selectNextUnit () {
+		//Loop through player's units to find an unused one
+		for (Unit unit : currentPlayer.getUnits()) {
+			if (!unit.isFinishedTurn() && unit != selectedUnit) {
+				System.out.println("GameScreen.java pleb2.0");
+				selectUnit(unit);
+			}
+		}
 	}
 	
 	private void selectUnit (Unit unit) {
@@ -337,7 +340,7 @@ public class GameScreen extends Screen implements InputProcessor {
 					hexHandled = true;
 			}
 			System.out.println("GameScreen.java test" + hexHandled);
-			if (!hexHandled || (hexTouched.getUnitOnHex() != null && currentPlayer.doesUnitBelongToPlayer(hexTouched.getUnitOnHex()))) {
+			if (!hexHandled/* || (hexTouched.getUnitOnHex() != null && currentPlayer.doesUnitBelongToPlayer(hexTouched.getUnitOnHex()))*/) {
 				System.out.println("GameScreen.java TEstrere");
 				if (hexTouched.getUnitOnHex() != null && hexTouched.getUnitOnHex() != selectedUnit)
 					selectUnit(hexTouched.getUnitOnHex());
