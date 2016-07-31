@@ -10,24 +10,36 @@ import net.hollowbit.strategygame.units.Unit;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.Hex.OverlayColor;
 
-public class MoveAttackTurnType extends TurnType implements HexTouchListener {
-	
-	private int movesLeft;
+public class AttackTurnType extends TurnType implements HexTouchListener {
+
 	private boolean attacked;
 	
-	public MoveAttackTurnType (Unit unit) {
+	public AttackTurnType (Unit unit) {
 		super(unit);
-		this.movesLeft = unit.getMoveSpeed();
 	}
 
 	@Override
-	public TextButton getTurnButton () {
-		return new TextButton("Move/Attack", StrategyGame.getGame().getSkin());
+	public TextButton getTurnButton() {
+		return new TextButton("Attack", StrategyGame.getGame().getSkin());
 	}
 
 	@Override
-	public void initiate (GameScreen gameScreen) {
+	public void turnStart() {
+		attacked = false;
+		if (!isUnitInRange()) {//If no unit is in range, than this unit has no need to take a turn
+			unit.setFinishedTurn(true);
+			attacked = true;
+		}
+	}
+
+	@Override
+	public void initiate(GameScreen gameScreen) {
 		if (usable() && !initiated) {
+			if (!isUnitInRange()) {//If no unit is in range, than this unit has no need to take a turn
+				unit.setFinishedTurn(true);
+				attacked = true;
+				return;
+			}
 			initiated = true;
 			gameScreen.addHexTouchListener(this);
 			initiateSecondTime(gameScreen);
@@ -35,20 +47,6 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 	}
 	
 	private void initiateSecondTime (GameScreen gameScreen) {
-		//change overlay for movement hexes
-		for (Hex hex : unit.getHex().getSurroundingHexesInRange(1)) {
-			if (hex.getUnitOnHex() != null) {
-				if (unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {//If unit is on same team, disallow moving there
-					hex.setOverlayColor(OverlayColor.INVALID);
-				}
-			} else {
-				if(hex.getType().collidable)
-					hex.setOverlayColor(OverlayColor.INVALID);
-				else
-					hex.setOverlayColor(OverlayColor.VALID);
-			}
-		}
-		
 		//Change overlay for attack hexes
 		for (Hex hex : unit.getHex().getSurroundingHexesInRange(unit.getAttackRange())) {
 			if (hex.getUnitOnHex() != null && !unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {
@@ -59,16 +57,16 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 			}
 		}
 	}
-
+	
 	@Override
-	public void dispose (GameScreen gameScreen) {
+	public void dispose(GameScreen gameScreen) {
 		initiated = false;
 		gameScreen.removeHexTouchListener(this);
 		gameScreen.resetFog();
 	}
 
 	@Override
-	public boolean hexTouched (Hex hex, GameScreen gameScreen) {
+	public boolean hexTouched(Hex hex, GameScreen gameScreen) {
 		switch(hex.getOverlayColor()) {
 		case ATTACK:
 			//Do damage based on unit type
@@ -93,17 +91,14 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 			
 			attacked = true;
 			break;
-		case VALID:
-			unit.move(hex);
-			break;
 		default://Do nothing if not one of the above
 			return false;
 		}
-		movesLeft--;
 		gameScreen.resetFog();
 		if (usable()) {
 			initiateSecondTime(gameScreen);
 		} else {
+			System.out.println("MoveAttackTurnType.java pleborino");
 			unit.setFinishedTurn(true);
 			gameScreen.resetUnitMoveButtons();
 			gameScreen.selectNextUnit();
@@ -112,14 +107,20 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 	}
 
 	@Override
-	public void turnStart() {
-		attacked = false;
-		this.movesLeft = unit.getMoveSpeed();
-	}
-
-	@Override
 	public boolean usable() {
-		return movesLeft > 0;
+		return !attacked;
+	}
+	
+	private boolean isUnitInRange () {
+		for (Hex hex : unit.getHex().getSurroundingHexesInRange(unit.getAttackRange())) {
+			if (hex.getUnitOnHex() != null && !unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {
+					if (attacked)//If this unit already attacked, then don't let it attack again
+						hex.setOverlayColor(OverlayColor.INVALID);
+					else
+						return true;
+			}
+		}
+		return false;
 	}
 
 }

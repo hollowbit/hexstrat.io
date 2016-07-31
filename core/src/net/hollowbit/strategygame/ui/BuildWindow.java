@@ -36,7 +36,10 @@ public class BuildWindow extends Window {
 		
 		//Add ui elements
 		unitList = new List<BuildType>(getSkin());
-		unitList.setItems(Village.BuildType.values());
+		if (village.isFirstBuild())
+			unitList.setItems(Village.BuildType.FIRST_BUILD_VALUES);
+		else
+			unitList.setItems(Village.BuildType.values());
 		unitList.addListener(new ChangeListener() {
 			
 			@Override
@@ -49,13 +52,13 @@ public class BuildWindow extends Window {
 		row();
 		
 		costLabel = new Label("Cost: " + (village.isFirstBuild() ? 1:Village.BuildType.values()[unitList.getSelectedIndex()].prodNeeded), getSkin(), "large");
-		add(costLabel);
+		add(costLabel).height(70);
 		row();
 				
 		descLabel = new Label("" + Village.BuildType.values()[unitList.getSelectedIndex()].desc, getSkin());
 		descLabel.setWrap(true);
-		descLabel.setWidth(400);
-		add(descLabel).width(400);
+		descLabel.setWidth(500);
+		add(descLabel).width(500).height(150);
 		row();
 		
 		final BuildWindow window = this;

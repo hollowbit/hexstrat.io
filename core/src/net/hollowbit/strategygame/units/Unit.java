@@ -48,10 +48,10 @@ public abstract class Unit {
 		player.addUnit(this);
 	}
 	
-	public void turnStart () {
+	public void turnStart (GameScreen gameScreen) {
 		finishedTurn = false;
 		
-		damage(hex.getType().damage);//Apply damage from hex
+		damage(hex.getType().damage, null);//Apply damage from hex
 		
 		if (defaultTurnType != null)
 			defaultTurnType.turnStart();
@@ -62,7 +62,7 @@ public abstract class Unit {
 		}
 	}
 	
-	public boolean damage (int amount) {
+	public boolean damage (int amount, Player damager) {
 		health += amount;
 		if (health <= 0) {
 			player.removeUnit(this);
@@ -141,7 +141,8 @@ public abstract class Unit {
 	}
 	
 	public void focusedOn (GameScreen gameScreen) {
-		defaultTurnType.initiate(gameScreen);
+		if (defaultTurnType != null)
+			defaultTurnType.initiate(gameScreen);
 	}
 	
 	public void setFinishedTurn (boolean finishedTurn) {
@@ -154,7 +155,7 @@ public abstract class Unit {
 	
 	public int getProduction () {return 0;}
 	public int getVisibilityRange () {return 2;}
-	public boolean isTower () {return false;}
+	public boolean isTower () {return false;}//If true, it is expected/assumed that this unit doesn't move
 	public int getMoveSpeed () {return 1;}
 	public int getAttackRange () {return 1;}
 	public int getHorsemanDamage () {return 2;}

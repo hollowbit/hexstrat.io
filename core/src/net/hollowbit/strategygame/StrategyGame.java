@@ -45,6 +45,7 @@ public class StrategyGame extends Game {
 		HexType.loadTextures();
 		assetManager.putTexture("blank", new Texture("blank.png"));
 		assetManager.putTexture("blank-hex", new Texture("blank_hex.png"));
+		assetManager.putTexture("grid", new Texture("grid.png"));
 		assetManager.putTexture("selected-hex-border", new Texture("selected_hex_border.png"));
 		
 		  //Unit textures
@@ -52,6 +53,22 @@ public class StrategyGame extends Game {
 		assetManager.putTexture("village-overlay", new Texture("units/village_overlay.png"));
 		assetManager.putTexture("horseman", new Texture("units/horseman.png"));
 		assetManager.putTexture("horseman-overlay", new Texture("units/horseman_overlay.png"));
+		assetManager.putTexture("archer", new Texture("units/archer.png"));
+		assetManager.putTexture("archer-overlay", new Texture("units/archer_overlay.png"));
+		assetManager.putTexture("worker", new Texture("units/worker.png"));
+		assetManager.putTexture("worker-overlay", new Texture("units/worker_overlay.png"));
+		assetManager.putTexture("tower", new Texture("units/tower.png"));
+		assetManager.putTexture("tower-overlay", new Texture("units/tower_overlay.png"));
+		assetManager.putTexture("farm", new Texture("units/farm.png"));
+		assetManager.putTexture("farm-overlay", new Texture("units/farm_overlay.png"));
+		assetManager.putTexture("swordsman", new Texture("units/swordsman.png"));
+		assetManager.putTexture("swordsman-overlay", new Texture("units/swordsman_overlay.png"));
+		assetManager.putTexture("spearman", new Texture("units/spearman.png"));
+		assetManager.putTexture("spearman-overlay", new Texture("units/spearman_overlay.png"));
+		assetManager.putTexture("catapult", new Texture("units/catapult.png"));
+		assetManager.putTexture("catapult-overlay", new Texture("units/catapult_overlay.png"));
+		assetManager.putTexture("beast", new Texture("units/beast.png"));
+		assetManager.putTexture("beast-overlay", new Texture("units/beast_overlay.png"));
 		
 		screenManager = new ScreenManager(new GameScreen());
 	}

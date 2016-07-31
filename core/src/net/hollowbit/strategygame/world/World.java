@@ -19,11 +19,6 @@ public class World {
 		units = new ArrayList<Unit>();
 	}
 	
-	public void turnStart () {
-		for (Unit unit : units)
-			unit.turnStart();
-	}
-	
 	public void update (float deltaTime) {
 		for (Unit unit : units)
 			unit.update(deltaTime);

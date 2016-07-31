@@ -14,10 +14,19 @@ public class Player {
 	private Color color;
 	private Unit lastMovedUnit;
 	
+	private int production;
+	
 	public Player (String name, Color color) {
 		this.name = name;
 		this.color = color;
 		this.units = new ArrayList<Unit>();
+	}
+	
+	public void turnStart () {
+		//Calculate production now, to avoid calculating all the time
+		production = 0;
+		for (Unit unit : units)
+			production += unit.getProduction();
 	}
 	
 	//Check if a particular unit belongs to this player
@@ -67,9 +76,6 @@ public class Player {
 	}
 	
 	public int getProduction () {
-		int production = 0;
-		for (Unit unit : units)
-			production += unit.getProduction();
 		return production;
 	}
 	

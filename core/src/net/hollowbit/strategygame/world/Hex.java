@@ -38,11 +38,15 @@ public class Hex {
 	public void render (SpriteBatch batch, int x, int y) {
 		batch.draw(type.getTexture(overlay == OverlayColor.FOG), x, y);
 		
+		//Draw overlay
 		if (overlay != OverlayColor.NONE) {
 			batch.setColor(overlay.getColor());
 			batch.draw(StrategyGame.getGame().getAssetManager().getTexture("blank-hex"), x, y);
 			batch.setColor(1, 1, 1, 1);
 		}
+		
+		//Draw grid
+		batch.draw(StrategyGame.getGame().getAssetManager().getTexture("grid"), x, y);
 	}
 	
 	public Unit getUnitOnHex () {

@@ -34,7 +34,7 @@ public class ChooseSpawnTurnType extends TurnType implements HexTouchListener {
 			initiated = true;
 			gameScreen.addHexTouchListener(this);
 			for (Hex hex : village.getHex().getSurroundingHexesInRange(1)) {
-				if (hex.getType().collidable)
+				if (hex.getType().collidable || (hex.getUnitOnHex() != null && hex.getUnitOnHex().isTower()))//If hex is collidable or unit on hex is a tower that won't move, set to invalid
 					hex.setOverlayColor(OverlayColor.INVALID);
 				else
 					hex.setOverlayColor(OverlayColor.VALID);

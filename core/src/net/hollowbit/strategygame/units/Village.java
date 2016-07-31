@@ -5,6 +5,8 @@ import net.hollowbit.strategygame.gamecomponents.Player;
 import net.hollowbit.strategygame.gamecomponents.TurnType;
 import net.hollowbit.strategygame.gamecomponents.turntypes.BuildTurnType;
 import net.hollowbit.strategygame.gamecomponents.turntypes.ChooseSpawnTurnType;
+import net.hollowbit.strategygame.screens.GameOverScreen;
+import net.hollowbit.strategygame.screens.GameScreen;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.World;
 
@@ -27,8 +29,8 @@ public class Village extends Unit {
 	}
 	
 	@Override
-	public void turnStart () {
-		super.turnStart();
+	public void turnStart (GameScreen gameScreen) {
+		super.turnStart(gameScreen);
 		//Check if done building
 		buildProdLeft -= player.getProduction();
 		
@@ -36,7 +38,7 @@ public class Village extends Unit {
 		if (isDoneBuilding() && unitBeingBuilt != null) {
 			//Find a suitable place to spawn unit
 			boolean spotFound = false;
-			if (spawn != null) {
+			if (spawn != null && spawn.getUnitOnHex() == null) {
 				spawnUnit(spawn);
 				spotFound = true;
 			} else {
@@ -52,7 +54,7 @@ public class Village extends Unit {
 			if (spotFound) {
 				firstUnitBuilt = true;
 			} else {//Give error message to player saying no space is available
-				
+				gameScreen.showErrorWindow("Could not spawn unit from village. All surrounding hexes are taken. Trying again next turn. Please make room.");
 			}
 		}
 		
@@ -67,6 +69,24 @@ public class Village extends Unit {
 		case HORSEMAN:
 			world.addUnit(new Horseman(world, player, hex));
 			break;
+		case WORKER:
+			world.addUnit(new Worker(world, player, hex));
+			break;
+		case ARCHER:
+			world.addUnit(new Archer(world, player, hex));
+			break;
+		case SWORDSMAN:
+			world.addUnit(new Swordsman(world, player, hex));
+			break;
+		case SPEARMAN:
+			world.addUnit(new Spearman(world, player, hex));
+			break;
+		case CATAPULT:
+			world.addUnit(new Catapult(world, player, hex));
+			break;
+		case BEAST:
+			world.addUnit(new Beast(world, player, hex));
+			break;
 		}
 	}
 	
@@ -76,6 +96,17 @@ public class Village extends Unit {
 			buildProdLeft = 1;
 		else
 			buildProdLeft = buildType.prodNeeded;
+	}
+	
+	@Override
+	public boolean damage (int amount, Player damager) {
+		boolean dead = super.damage(amount, damager);
+		
+		//Since this is the village, if it is dead, then the game is over
+		if (dead) {
+			StrategyGame.getGame().getScreenManager().setScreen(new GameOverScreen(damager));
+		}
+		return dead;
 	}
 	
 	@Override
@@ -115,7 +146,15 @@ public class Village extends Unit {
 	}
 	
 	public enum BuildType {
-		HORSEMAN("Horseman", "Unit that can move 2 hexes per turn. Also effective against swordsman.", 5);
+		HORSEMAN("Horseman", "Unit that can move 2 hexes per turn. Effective against swordsman.", 5),
+		WORKER("Worker", "Unit that can build towers and farms. Any attack kills it instantly.", 4),
+		ARCHER("Archer", "Weaker unit that can attack at a range of 2 hexes, dealing 2 damage.", 4),
+		SWORDSMAN("Swordsman", "Unit that has a special \"shield\" mode that protects it from attacks. Effective against spearman", 5),
+		SPEARMAN("Spearman", "Unit that has a \"berzerker\" mode that instantly kills units. Effective against horseman.", 5),
+		CATAPULT("Catapult", "Low health unit that deals 4 damage to farms, villages and towers.", 4),
+		BEAST("Beast", "Unit with lots of health and deals 4 damage to everything. Expensive though.", 10);
+		
+		public static final BuildType[] FIRST_BUILD_VALUES = {HORSEMAN, WORKER, ARCHER, SWORDSMAN, SPEARMAN};
 		
 		public String name;
 		public String desc;

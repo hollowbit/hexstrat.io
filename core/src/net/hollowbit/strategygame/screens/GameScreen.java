@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
@@ -13,6 +14,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -60,6 +63,8 @@ public class GameScreen extends Screen implements InputProcessor {
 	
 	TurnType selectedTurnType = null;
 	
+	boolean privacyMode;//enabled to prevent players from seeing the other player's game between hotseat turns
+	
 	public GameScreen () {
 		stage = new Stage(StrategyGame.getGame().getUiCamera().getScreenViewport(), StrategyGame.getGame().getBatch());
 		world = new World("grasslands");
@@ -75,10 +80,12 @@ public class GameScreen extends Screen implements InputProcessor {
 		player1 = new Player("Player 1", Color.RED);
 		player2 = new Player("Player 2", Color.BLUE);
 		currentPlayer = player1;
+		privacyMode = true;
 		
 		//Give each player a village to start
 		world.addUnit(new Village(world, player1, world.getSpawn1()));
 		world.addUnit(new Village(world, player2, world.getSpawn2()));
+		player2.getVillage().damage(-14, player1);
 		
 		//Add ui
 		endTurnButton = new TextButton("End Turn", StrategyGame.getGame().getSkin(), "large");
@@ -87,7 +94,8 @@ public class GameScreen extends Screen implements InputProcessor {
 		endTurnButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				endTurn();
+				if (!windowOpen)
+					endTurn();
 				super.clicked(event, x, y);
 			}
 		});
@@ -109,15 +117,12 @@ public class GameScreen extends Screen implements InputProcessor {
 	public void selectNextUnit () {
 		//Loop through player's units to find an unused one
 		for (Unit unit : currentPlayer.getUnits()) {
-			if (!unit.isFinishedTurn() && unit != selectedUnit) {
-				System.out.println("GameScreen.java pleb2.0");
+			if (!unit.isFinishedTurn() && unit != selectedUnit)
 				selectUnit(unit);
-			}
 		}
 	}
 	
-	private void selectUnit (Unit unit) {
-		System.out.println("gamescreen.java pleb");
+	public void selectUnit (Unit unit) {
 		//Dispose of current unit turn types before setting a new one
 		disposeOfSelectedUnit();
 		selectedUnit = unit;
@@ -137,7 +142,8 @@ public class GameScreen extends Screen implements InputProcessor {
 		turnTypeButtons.clear();
 		
 		ArrayList<TurnType> turnTypes = new ArrayList<TurnType>();
-		turnTypes.add(selectedUnit.getDefaultTurnType());//Add default turn type button
+		if (selectedUnit.getDefaultTurnType() != null)
+			turnTypes.add(selectedUnit.getDefaultTurnType());//Add default turn type button
 		
 		if (selectedUnit.getTurnTypes() != null)
 			turnTypes.addAll(Arrays.asList(selectedUnit.getTurnTypes()));
@@ -162,7 +168,7 @@ public class GameScreen extends Screen implements InputProcessor {
 					super.clicked(event, x, y);
 				}
 			});
-			turnTypeButton.setPosition(15, 500 - indexOfButtons * 75);
+			turnTypeButton.setPosition(15, 300 - indexOfButtons * 40);
 			turnTypeButtons.add(turnTypeButton);
 			stage.addActor(turnTypeButton);
 			indexOfButtons++;
@@ -179,41 +185,51 @@ public class GameScreen extends Screen implements InputProcessor {
 	
 	@Override
 	public void render(SpriteBatch batch, float width, float height) {
-		world.render(batch, currentPlayer);
+		if (!privacyMode) {
+			world.render(batch, currentPlayer);
 		
-		if (selectedUnit != null)
-			batch.draw(StrategyGame.getGame().getAssetManager().getTexture("selected-hex-border"), selectedUnit.getX(), selectedUnit.getY());
+			if (selectedUnit != null)
+				batch.draw(StrategyGame.getGame().getAssetManager().getTexture("selected-hex-border"), selectedUnit.getX(), selectedUnit.getY());
+		}
 	}
 	
 	@Override
 	public void renderUi(SpriteBatch batch, float width, float height) {
 		BitmapFont fontMedium = StrategyGame.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM);
 		BitmapFont fontSmall = StrategyGame.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL);
-		GlyphLayout turnLblLayout = new GlyphLayout(fontMedium, currentPlayer.getName() + "'s turn!");
+		GlyphLayout turnLblLayout = new GlyphLayout(fontMedium, "[#" + currentPlayer.getColor() + "]" + currentPlayer.getName() + "'s [WHITE]turn!");
 		fontMedium.draw(batch, turnLblLayout, width / 2 - turnLblLayout.width / 2, height - turnLblLayout.height - 10);
-		
-		//Draw labels for info on selected unit, friendly or not
-		if (selectedUnit != null) {
-			GlyphLayout healthStatLayout = new GlyphLayout(fontSmall, "Health: " + selectedUnit.getHealth() + "/" + selectedUnit.getMaxHealth());
-			fontSmall.draw(batch, healthStatLayout, width - healthStatLayout.width - 10, height - 100);
-			GlyphLayout ownerLayout = new GlyphLayout(fontSmall, "Owner: [#" + selectedUnit.getPlayer().getColor() + "]" + selectedUnit.getPlayer().getName());
-			fontSmall.draw(batch, ownerLayout, width - ownerLayout.width - 10, height - 140);
+		if (privacyMode) {
+			GlyphLayout tapToStartTurnLayout = new GlyphLayout(fontSmall, "Tap to start turn!");
+			fontSmall.draw(batch, tapToStartTurnLayout, width / 2 - tapToStartTurnLayout.width / 2, height / 2 - tapToStartTurnLayout.height / 2);
+		} else {
 			
-			if (currentPlayer.doesUnitBelongToPlayer(selectedUnit)) {
-				GlyphLayout actionsLayout = new GlyphLayout(fontSmall, "Actions:");
-				fontSmall.draw(batch, actionsLayout, 15, 550);
+			GlyphLayout productionLayout = new GlyphLayout(fontSmall, "Production: +" + currentPlayer.getProduction());
+			fontSmall.draw(batch, productionLayout, 10, height - productionLayout.height - 10);
+			
+			//Draw labels for info on selected unit, friendly or not
+			if (selectedUnit != null) {
+				GlyphLayout healthStatLayout = new GlyphLayout(fontSmall, "Health: " + selectedUnit.getHealth() + "/" + selectedUnit.getMaxHealth());
+				fontSmall.draw(batch, healthStatLayout, width - healthStatLayout.width - 10, height - 100);
+				GlyphLayout ownerLayout = new GlyphLayout(fontSmall, "Owner: [#" + selectedUnit.getPlayer().getColor() + "]" + selectedUnit.getPlayer().getName());
+				fontSmall.draw(batch, ownerLayout, width - ownerLayout.width - 10, height - 140);
 				
-				//If no actions for this unit, show message
-				if (turnTypeButtons.size() == 0) {
-					GlyphLayout actionsNoneLayout = new GlyphLayout(fontSmall, "None Left.");
-					fontSmall.draw(batch, actionsNoneLayout, 15, 520);
+				if (currentPlayer.doesUnitBelongToPlayer(selectedUnit)) {
+					GlyphLayout actionsLayout = new GlyphLayout(fontSmall, "Actions:");
+					fontSmall.draw(batch, actionsLayout, 15, 350);
+					
+					//If no actions for this unit, show message
+					if (turnTypeButtons.size() == 0) {
+						GlyphLayout actionsNoneLayout = new GlyphLayout(fontSmall, "None Left.");
+						fontSmall.draw(batch, actionsNoneLayout, 15, 320);
+					}
 				}
 			}
-		}
 		
-		batch.end();
-		stage.draw();
-		batch.begin();
+			batch.end();
+			stage.draw();
+			batch.begin();
+		}
 	}
 	
 	public void endTurn () {
@@ -225,17 +241,19 @@ public class GameScreen extends Screen implements InputProcessor {
 			currentPlayer = player1;
 
 		resetFog();
+		privacyMode = true;
 		
 		//Start turn
 		startTurn();
 	}
 	
 	public void startTurn () {
+		currentPlayer.turnStart();//Start turn for player
 		//Loop through all player's units and run startTurn
 		ArrayList<Unit> currentUnits = new ArrayList<Unit>();
 		currentUnits.addAll(currentPlayer.getUnits());
 		for (Unit unit : currentUnits)
-			unit.turnStart();
+			unit.turnStart(this);
 		
 		//Depending on whether the village is ready to build something new, zoom to it, or the last used unit
 		if (!currentPlayer.getVillage().isDoneBuilding())
@@ -255,7 +273,8 @@ public class GameScreen extends Screen implements InputProcessor {
 	
 	public void disposeOfSelectedUnit () {
 		if (selectedUnit != null) {
-			selectedUnit.getDefaultTurnType().dispose(this);
+			if (selectedUnit.getDefaultTurnType() != null)
+				selectedUnit.getDefaultTurnType().dispose(this);
 			if (selectedUnit.getTurnTypes() != null) {
 				for (TurnType turnType : selectedUnit.getTurnTypes())
 					turnType.dispose(this);
@@ -263,7 +282,8 @@ public class GameScreen extends Screen implements InputProcessor {
 			for (TextButton turnTypeButton : turnTypeButtons)
 				turnTypeButton.remove();
 			turnTypeButtons.clear();
-			currentPlayer.setLastMovedUnit(selectedUnit);
+			if (selectedUnit != null && currentPlayer.doesUnitBelongToPlayer(selectedUnit))//Make sure the unit is not null and actually belongs to player
+				currentPlayer.setLastMovedUnit(selectedUnit);
 			selectedUnit = null;
 		}
 	}
@@ -285,6 +305,21 @@ public class GameScreen extends Screen implements InputProcessor {
 		}
 	}
 	
+	public void showErrorWindow (String error) {
+		Dialog dialog = new Dialog("Error", StrategyGame.getGame().getSkin(), "dialog") {
+		    public void result(Object obj) {
+		        remove();
+		    }
+		};
+		Label label = new Label(error, StrategyGame.getGame().getSkin());
+		label.setWrap(true);
+		dialog.add(label).width(400);
+		dialog.button("Close", true);
+		dialog.key(Keys.ENTER, true);
+		dialog.key(Keys.ESCAPE, true);
+		dialog.show(stage);
+	}
+	
 	public void addHexTouchListener (HexTouchListener hexTouchListener) {
 		hexTouchListeners.add(hexTouchListener);
 	}
@@ -302,6 +337,14 @@ public class GameScreen extends Screen implements InputProcessor {
 	
 	public void closeWindow () {
 		windowOpen = false;
+	}
+	
+	public World getWorld () {
+		return world;
+	}
+	
+	public Player getCurrentPlayer () {
+		return currentPlayer;
 	}
 
 	@Override
@@ -325,25 +368,30 @@ public class GameScreen extends Screen implements InputProcessor {
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		if (windowOpen)
-			return false;
-		
-		Vector2 touchCoords = StrategyGame.getGame().getGameCamera().unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
-		Hex hexTouched = hexTouchChecker.getTouchedHex((int) touchCoords.x, (int) touchCoords.y, world.getMap());
-		//If the touched hex has a unit, set it as selected
-		if (hexTouched != null) {
+		if (privacyMode) {
+			privacyMode = false;
+		} else {
+			if (windowOpen)
+				return false;
 			
-			boolean hexHandled = false;
-			//Loop through each listener and loop
-			for (HexTouchListener hexTouchListener : hexTouchListeners) {
-				if (hexTouchListener.hexTouched(hexTouched, this))
-					hexHandled = true;
-			}
-			System.out.println("GameScreen.java test" + hexHandled);
-			if (!hexHandled/* || (hexTouched.getUnitOnHex() != null && currentPlayer.doesUnitBelongToPlayer(hexTouched.getUnitOnHex()))*/) {
-				System.out.println("GameScreen.java TEstrere");
-				if (hexTouched.getUnitOnHex() != null && hexTouched.getUnitOnHex() != selectedUnit)
-					selectUnit(hexTouched.getUnitOnHex());
+			Vector2 touchCoords = StrategyGame.getGame().getGameCamera().unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+			Hex hexTouched = hexTouchChecker.getTouchedHex((int) touchCoords.x, (int) touchCoords.y, world.getMap());
+			//If the touched hex has a unit, set it as selected
+			if (hexTouched != null) {
+				
+				boolean hexHandled = false;
+				//Loop through each listener and loop
+				ArrayList<HexTouchListener> currentListeners = new ArrayList<HexTouchListener>();//This is to avoid a concurrent modification error
+				currentListeners.addAll(hexTouchListeners);
+				for (HexTouchListener hexTouchListener : currentListeners) {
+					if (hexTouchListener.hexTouched(hexTouched, this))
+						hexHandled = true;
+				}
+				
+				if (!hexHandled/* || (hexTouched.getUnitOnHex() != null && currentPlayer.doesUnitBelongToPlayer(hexTouched.getUnitOnHex()))*/) {
+					if (hexTouched.getUnitOnHex() != null && hexTouched.getUnitOnHex() != selectedUnit)
+						selectUnit(hexTouched.getUnitOnHex());
+				}
 			}
 		}
 		return false;
