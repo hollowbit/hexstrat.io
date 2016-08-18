@@ -31,6 +31,7 @@ public class Village extends Unit {
 	@Override
 	public void turnStart (GameScreen gameScreen) {
 		super.turnStart(gameScreen);
+		
 		//Check if done building
 		buildProdLeft -= player.getProduction();
 		
@@ -78,8 +79,8 @@ public class Village extends Unit {
 		case SWORDSMAN:
 			world.addUnit(new Swordsman(world, player, hex));
 			break;
-		case SPEARMAN:
-			world.addUnit(new Spearman(world, player, hex));
+		case PHALANX:
+			world.addUnit(new Phalanx(world, player, hex));
 			break;
 		case CATAPULT:
 			world.addUnit(new Catapult(world, player, hex));
@@ -99,8 +100,8 @@ public class Village extends Unit {
 	}
 	
 	@Override
-	public boolean damage (int amount, Player damager) {
-		boolean dead = super.damage(amount, damager);
+	public boolean damage (int amount, Player damager, GameScreen gameScreen) {
+		boolean dead = super.damage(amount, damager, gameScreen);
 		
 		//Since this is the village, if it is dead, then the game is over
 		if (dead) {
@@ -128,7 +129,7 @@ public class Village extends Unit {
 		return buildProdLeft <= 0;
 	}
 	
-	public int getBuildTurnsLeft () {
+	public float getBuildTurnsLeft () {
 		return buildProdLeft / player.getProduction() + (buildProdLeft % player.getProduction() > 0 ? 1:0);
 	}
 	
@@ -141,20 +142,20 @@ public class Village extends Unit {
 	}
 	
 	@Override
-	public int getProduction() {
+	public float getProduction() {
 		return 1;
 	}
 	
 	public enum BuildType {
-		HORSEMAN("Horseman", "Unit that can move 2 hexes per turn. Effective against swordsman.", 5),
+		HORSEMAN("Horseman", "Unit that can move up to 3 hexes per turn. Effective against swordsman.", 5),
 		WORKER("Worker", "Unit that can build towers and farms. Any attack kills it instantly.", 4),
 		ARCHER("Archer", "Weaker unit that can attack at a range of 2 hexes, dealing 2 damage.", 4),
-		SWORDSMAN("Swordsman", "Unit that has a special \"shield\" mode that protects it from attacks. Effective against spearman", 5),
-		SPEARMAN("Spearman", "Unit that has a \"berzerker\" mode that instantly kills units. Effective against horseman.", 5),
+		SWORDSMAN("Swordsman", "Unit that has a special \"shield\" mode that protects it from attacks. Effective against phalanx.", 5),
+		PHALANX("Phalanx", "Unit that has a \"berzerker\" mode that instantly kills units. Effective against horseman.", 5),
 		CATAPULT("Catapult", "Low health unit that deals 4 damage to farms, villages and towers.", 4),
-		BEAST("Beast", "Unit with lots of health and deals 4 damage to everything. Expensive though.", 10);
+		BEAST("Beast", "Unit with lots of health and deals 4 damage to everything. Expensive though and is slow.", 10);
 		
-		public static final BuildType[] FIRST_BUILD_VALUES = {HORSEMAN, WORKER, ARCHER, SWORDSMAN, SPEARMAN};
+		public static final BuildType[] FIRST_BUILD_VALUES = {HORSEMAN, WORKER, ARCHER, SWORDSMAN, PHALANX};
 		
 		public String name;
 		public String desc;

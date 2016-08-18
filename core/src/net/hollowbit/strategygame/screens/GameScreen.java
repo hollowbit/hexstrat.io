@@ -33,6 +33,7 @@ import net.hollowbit.strategygame.units.Village;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.Hex.OverlayColor;
 import net.hollowbit.strategygame.world.World;
+import net.hollowbit.strategygame.tools.*;
 
 public class GameScreen extends Screen implements InputProcessor {
 	
@@ -63,11 +64,14 @@ public class GameScreen extends Screen implements InputProcessor {
 	
 	TurnType selectedTurnType = null;
 	
+	HexMessageManager hexMessageManager;
+	
 	boolean privacyMode;//enabled to prevent players from seeing the other player's game between hotseat turns
 	
 	public GameScreen () {
 		stage = new Stage(StrategyGame.getGame().getUiCamera().getScreenViewport(), StrategyGame.getGame().getBatch());
 		world = new World("grasslands");
+		hexMessageManager = new HexMessageManager();
 		
 		turnTypeButtons = new ArrayList<TextButton>();
 		hexTouchListeners = new ArrayList<HexTouchListener>();
@@ -85,7 +89,6 @@ public class GameScreen extends Screen implements InputProcessor {
 		//Give each player a village to start
 		world.addUnit(new Village(world, player1, world.getSpawn1()));
 		world.addUnit(new Village(world, player2, world.getSpawn2()));
-		player2.getVillage().damage(-14, player1);
 		
 		//Add ui
 		endTurnButton = new TextButton("End Turn", StrategyGame.getGame().getSkin(), "large");
@@ -112,6 +115,7 @@ public class GameScreen extends Screen implements InputProcessor {
 		
 		stage.act();
 		world.update(deltaTime);
+		hexMessageManager.update(deltaTime);
 	}
 	
 	public void selectNextUnit () {
@@ -141,13 +145,16 @@ public class GameScreen extends Screen implements InputProcessor {
 			turnButton.remove();
 		turnTypeButtons.clear();
 		
+		//if (selectedUnit.isFinishedTurn())
+			//return;
+		
 		ArrayList<TurnType> turnTypes = new ArrayList<TurnType>();
 		if (selectedUnit.getDefaultTurnType() != null)
 			turnTypes.add(selectedUnit.getDefaultTurnType());//Add default turn type button
 		
 		if (selectedUnit.getTurnTypes() != null)
 			turnTypes.addAll(Arrays.asList(selectedUnit.getTurnTypes()));
-		
+			
 		//Add buttons for each turn type
 		int indexOfButtons = 0;
 		for (final TurnType turnType : turnTypes) {
@@ -175,6 +182,10 @@ public class GameScreen extends Screen implements InputProcessor {
 		}
 	}
 	
+	public void setSelectedTurnType (TurnType turnType) {
+		this.selectedTurnType = turnType;
+	}
+	
 	@Override
 	public void resize(int width, int height) {
 		endTurnButton.setPosition(width - endTurnButton.getWidth() - END_TURN_BUTTON_PADDING, END_TURN_BUTTON_PADDING);
@@ -190,6 +201,8 @@ public class GameScreen extends Screen implements InputProcessor {
 		
 			if (selectedUnit != null)
 				batch.draw(StrategyGame.getGame().getAssetManager().getTexture("selected-hex-border"), selectedUnit.getX(), selectedUnit.getY());
+			
+			hexMessageManager.render(batch);
 		}
 	}
 	
@@ -197,14 +210,13 @@ public class GameScreen extends Screen implements InputProcessor {
 	public void renderUi(SpriteBatch batch, float width, float height) {
 		BitmapFont fontMedium = StrategyGame.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM);
 		BitmapFont fontSmall = StrategyGame.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL);
-		GlyphLayout turnLblLayout = new GlyphLayout(fontMedium, "[#" + currentPlayer.getColor() + "]" + currentPlayer.getName() + "'s [WHITE]turn!");
-		fontMedium.draw(batch, turnLblLayout, width / 2 - turnLblLayout.width / 2, height - turnLblLayout.height - 10);
 		if (privacyMode) {
+			GlyphLayout turnLblLayout = new GlyphLayout(fontMedium, "[#" + currentPlayer.getColor() + "]" + currentPlayer.getName() + "'s [WHITE]turn!");
+			fontMedium.draw(batch, turnLblLayout, width / 2 - turnLblLayout.width / 2, height - turnLblLayout.height - 10);
 			GlyphLayout tapToStartTurnLayout = new GlyphLayout(fontSmall, "Tap to start turn!");
 			fontSmall.draw(batch, tapToStartTurnLayout, width / 2 - tapToStartTurnLayout.width / 2, height / 2 - tapToStartTurnLayout.height / 2);
 		} else {
-			
-			GlyphLayout productionLayout = new GlyphLayout(fontSmall, "Production: +" + currentPlayer.getProduction());
+			GlyphLayout productionLayout = new GlyphLayout(fontSmall, "Food: +" + currentPlayer.getProduction());
 			fontSmall.draw(batch, productionLayout, 10, height - productionLayout.height - 10);
 			
 			//Draw labels for info on selected unit, friendly or not
@@ -248,6 +260,7 @@ public class GameScreen extends Screen implements InputProcessor {
 	}
 	
 	public void startTurn () {
+		hexMessageManager.startTurn();
 		currentPlayer.turnStart();//Start turn for player
 		//Loop through all player's units and run startTurn
 		ArrayList<Unit> currentUnits = new ArrayList<Unit>();
@@ -345,6 +358,10 @@ public class GameScreen extends Screen implements InputProcessor {
 	
 	public Player getCurrentPlayer () {
 		return currentPlayer;
+	}
+	
+	public HexMessageManager getHexMessageManager () {
+		return hexMessageManager;
 	}
 
 	@Override

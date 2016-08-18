@@ -14,12 +14,17 @@ public class Farm extends Unit {
 	}
 	
 	@Override
-	public int getProduction () {
-		return 1;
+	public float getProduction () {
+		return hex.getType().production;
 	}
 	
 	@Override
 	public boolean isTower () {
+		return true;
+	}
+	
+	@Override
+	public boolean isFinishedTurn() {
 		return true;
 	}
 

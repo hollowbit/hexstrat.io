@@ -16,6 +16,8 @@ public abstract class TurnType {
 		initiated = false;
 	}
 	
+	public void moveMade () {}
+	
 	public abstract TextButton getTurnButton();
 	public abstract void turnStart();
 	public abstract void initiate(GameScreen gameScreen);

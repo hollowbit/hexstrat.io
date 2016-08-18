@@ -14,7 +14,7 @@ public class Player {
 	private Color color;
 	private Unit lastMovedUnit;
 	
-	private int production;
+	private float production;
 	
 	public Player (String name, Color color) {
 		this.name = name;
@@ -75,7 +75,7 @@ public class Player {
 		return (Village) units.get(0);//First unit index should be a village
 	}
 	
-	public int getProduction () {
+	public float getProduction () {
 		return production;
 	}
 	

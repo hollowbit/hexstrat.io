@@ -5,6 +5,8 @@ import net.hollowbit.strategygame.gamecomponents.Player;
 import net.hollowbit.strategygame.gamecomponents.turntypes.MoveAttackTurnType;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.World;
+import net.hollowbit.strategygame.gamecomponents.*;
+import net.hollowbit.strategygame.gamecomponents.turntypes.*;
 
 public class Beast extends Unit {
 	
@@ -13,6 +15,7 @@ public class Beast extends Unit {
 	public Beast(World world, Player player, Hex hex) {
 		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("beast"), StrategyGame.getGame().getAssetManager().getTexture("beast-overlay"), HEALTH);
 		this.defaultTurnType = new MoveAttackTurnType(this);
+		this.turnTypes = new TurnType[]{new HealTurnType(this)};
 	}
 	
 	@Override
@@ -38,6 +41,12 @@ public class Beast extends Unit {
 	@Override
 	public int getTowerDamage() {
 		return 4;
+	}
+
+	@Override
+	public int getMoveSpeed()
+	{
+		return 1;
 	}
 	
 }

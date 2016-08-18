@@ -47,6 +47,7 @@ public class StrategyGame extends Game {
 		assetManager.putTexture("blank-hex", new Texture("blank_hex.png"));
 		assetManager.putTexture("grid", new Texture("grid.png"));
 		assetManager.putTexture("selected-hex-border", new Texture("selected_hex_border.png"));
+		assetManager.putTextureMap("hearts", new Texture("hearts.png"), 15, 13);
 		
 		  //Unit textures
 		assetManager.putTexture("village", new Texture("units/village.png"));

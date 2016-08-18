@@ -10,9 +10,19 @@ import net.hollowbit.strategygame.StrategyGame;
 
 public enum HexType {
 	
-	GRASS(0, 0, 0, false, 0),
-	WATER(1, 1, 0, true, 0, 2, 0.8f)/*,
-	MOUNTAIN(2, 2, 0, true, 0)*/;
+	GRASS(0, 0, 0, false, 0, 0.5f, 1),
+	WATER(1, 1, 0, true, 0, 0, 0, 2, 0.8f),
+	FOREST(2, 3, 0, false, 0, 0.25f, 2),
+	HILLS(3, 4, 0, false, 0, 0.25f, 2),
+	LAVA(4, 5, 0, true, 0, 0, 0, 2, 0.8f),
+	POISON(5, 7, 0, false, -1, 0, 1),
+	SPRING(6, 8, 0, false, 1, 0.75f, 1),
+	FARMLAND(7, 9, 0, false, 0, 1, 1),
+	HELL(8, 10, 0, false, 0, 0.5f, 1),
+	HELL_POISON(9, 11, 0, false, -1, 0, 1),
+	HELL_HEALING(10, 12, 0, false, 1, 1, 1),
+	HELL_CEMETARY(11, 13, 0, false, 0, 1, 2),
+	HELL_RUINS(12, 14, 0, false, 0, 0.25f, 2);
 	
 	TextureRegion texture;
 	Animation animation;
@@ -20,19 +30,23 @@ public enum HexType {
 	private int spriteSheetX, spriteSheetY;
 	public boolean collidable;
 	public int damage;
+	public float production;
+	public int movesUsed;
 	int animationFrames;
 	float animationTime;
 	
-	private HexType (int id, int spriteSheetX, int spriteSheetY, boolean collidable, int damage) {
-		this(id, spriteSheetX, spriteSheetY, collidable, damage, 0, 0);
+	private HexType (int id, int spriteSheetX, int spriteSheetY, boolean collidable, int damage, float production, int movesUsed) {
+		this(id, spriteSheetX, spriteSheetY, collidable, damage, production, movesUsed, 0, 0);
 	}
 	
-	private HexType (int id, int spriteSheetX, int spriteSheetY, boolean collidable, int damage, int animationFrames, float animationTime) {
+	private HexType (int id, int spriteSheetX, int spriteSheetY, boolean collidable, int damage, float production, int movesUsed, int animationFrames, float animationTime) {
 		this.id = id;
 		this.spriteSheetX = spriteSheetX;
 		this.spriteSheetY = spriteSheetY;
 		this.collidable = collidable;
 		this.damage = damage;
+		this.production = production;
+		this.movesUsed = movesUsed;
 		this.animationFrames = animationFrames;
 		this.animationTime = animationTime;
 	}

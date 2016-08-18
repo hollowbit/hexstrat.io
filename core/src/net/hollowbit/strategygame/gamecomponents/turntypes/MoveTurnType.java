@@ -61,7 +61,7 @@ public class MoveTurnType extends TurnType implements HexTouchListener {
 
 	@Override
 	public boolean usable () {
-		return movesLeft > 0;
+		return movesLeft > 0 && !unit.isFinishedTurn() && (unit.getTurnTypeSet() == null || unit.getTurnTypeSet() == this);
 	}
 
 	@Override
@@ -73,13 +73,16 @@ public class MoveTurnType extends TurnType implements HexTouchListener {
 		default://Do nothing if not one of the above
 			return false;
 		}
-		movesLeft--;
+		unit.setTurnType(this);
+		gameScreen.resetUnitMoveButtons();
+		movesLeft -= unit.getHex().getType().movesUsed;
+		unit.moveMade();
+		
 		gameScreen.resetFog();
 		if (usable()) {
 			initiateSecondTime(gameScreen);
 		} else {
 			unit.setFinishedTurn(true);
-			gameScreen.resetUnitMoveButtons();
 			gameScreen.selectNextUnit();
 		}
 		return true;

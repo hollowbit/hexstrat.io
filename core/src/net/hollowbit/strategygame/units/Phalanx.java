@@ -8,27 +8,24 @@ import net.hollowbit.strategygame.world.World;
 import net.hollowbit.strategygame.gamecomponents.*;
 import net.hollowbit.strategygame.gamecomponents.turntypes.*;
 
-public class Horseman extends Unit {
-
-	public Horseman(World world, Player player, Hex hex) {
-		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("horseman"), StrategyGame.getGame().getAssetManager().getTexture("horseman-overlay"), 6);
+public class Phalanx extends Unit {
+	
+	private static final int HEALTH = 6;
+	
+	public Phalanx (World world, Player player, Hex hex) {
+		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("spearman"), StrategyGame.getGame().getAssetManager().getTexture("spearman-overlay"), HEALTH);
 		this.defaultTurnType = new MoveAttackTurnType(this);
-		this.turnTypes = new TurnType[]{new HealTurnType(this)};
+		this.turnTypes = new TurnType[]{new HealTurnType(this), new BerzerkTurnType(this)};
 	}
 	
 	@Override
-	public int getMoveSpeed() {
-		return 3;
-	}
-	
-	@Override
-	public int getSwordsmanDamage() {
-		return 3;
-	}
-	
-	@Override
-	public boolean isHorseman() {
+	public boolean isSpearman() {
 		return true;
+	}
+	
+	@Override
+	public int getHorsemanDamage () {
+		return 3;
 	}
 
 }

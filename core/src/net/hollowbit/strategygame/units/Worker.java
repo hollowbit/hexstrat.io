@@ -11,7 +11,7 @@ import net.hollowbit.strategygame.world.World;
 
 public class Worker extends Unit {
 
-	private static final int HEALTH = 1;
+	private static final int HEALTH = 2;
 	
 	public Worker(World world, Player player, Hex hex) {
 		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("worker"), StrategyGame.getGame().getAssetManager().getTexture("worker-overlay"), HEALTH);

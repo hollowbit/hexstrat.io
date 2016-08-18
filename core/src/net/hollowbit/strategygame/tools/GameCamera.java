@@ -12,7 +12,7 @@ import net.hollowbit.strategygame.world.Hex;
 
 public class GameCamera {
 	
-	public static final float UNITS_PER_PIXEL = 0.75f;
+	public static final float UNITS_PER_PIXEL = 0.5f;
 	private static final int LERP_MULTIPLIER = 4;
 	
 	private OrthographicCamera cam;
@@ -53,7 +53,7 @@ public class GameCamera {
 		//Draw camera
 		if (Gdx.input.isTouched()) {
 			goal = null;
-			cam.translate(-Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
+			cam.translate(-Gdx.input.getDeltaX() * cam.zoom / UNITS_PER_PIXEL, Gdx.input.getDeltaY() * cam.zoom / UNITS_PER_PIXEL);
 		}
 		
 		/*if (ArchipeloClient.getGame().getWorld() != null && ArchipeloClient.getGame().getWorld().getMap() != null) {
@@ -130,5 +130,14 @@ public class GameCamera {
 	/*public CollisionRect getViewRect () {
 		return new CollisionRect(cam.position.x - cam.viewportWidth * cam.zoom / 2, cam.position.y - cam.viewportHeight * cam.zoom / 2, 0, 0, cam.viewportWidth * cam.zoom, cam.viewportHeight * cam.zoom);
 	}*/
+	
+	public boolean isRectInView (float x, float y, float width, float height) {
+		float camX = cam.position.x- cam.viewportWidth * cam.zoom / 2;
+		float camY = cam.position.y - cam.viewportHeight * cam.zoom / 2;
+		float camWidth = cam.viewportWidth * cam.zoom;
+		float camHeight = cam.viewportHeight * cam.zoom;
+		
+		return x + width > camX && x < camX + camWidth && y + height > camY && y < camY + camHeight;
+	}
 	
 }

@@ -44,7 +44,7 @@ public class BuildWindow extends Window {
 			
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				costLabel.setText("Cost: " + (village.isFirstBuild() ? 1:Village.BuildType.values()[unitList.getSelectedIndex()].prodNeeded));
+				costLabel.setText("Cost: " + (village.isFirstBuild() ? 1:Village.BuildType.values()[unitList.getSelectedIndex()].prodNeeded) + " food");
 				descLabel.setText("" + Village.BuildType.values()[unitList.getSelectedIndex()].desc);
 			}
 		});

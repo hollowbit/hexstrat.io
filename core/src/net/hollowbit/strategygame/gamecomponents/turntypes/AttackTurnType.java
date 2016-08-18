@@ -71,23 +71,18 @@ public class AttackTurnType extends TurnType implements HexTouchListener {
 		case ATTACK:
 			//Do damage based on unit type
 			Unit attackedUnit = hex.getUnitOnHex();
-			boolean unitKilled = false;
 			if (attackedUnit.isHorseman())
-				unitKilled = attackedUnit.damage(-unit.getHorsemanDamage(), gameScreen.getCurrentPlayer());
+				attackedUnit.damage(-unit.getHorsemanDamage(), gameScreen.getCurrentPlayer(), gameScreen);
 			else if (attackedUnit.isSpearman())
-				unitKilled = attackedUnit.damage(-unit.getSpearmanDamage(), gameScreen.getCurrentPlayer());
+				attackedUnit.damage(-unit.getSpearmanDamage(), gameScreen.getCurrentPlayer(), gameScreen);
 			else if (attackedUnit.isSwordsman())
-				unitKilled = attackedUnit.damage(-unit.getSwordsmanDamage(), gameScreen.getCurrentPlayer());
+				attackedUnit.damage(-unit.getSwordsmanDamage(), gameScreen.getCurrentPlayer(), gameScreen);
 			else if (attackedUnit.isTower())
-				unitKilled = attackedUnit.damage(-unit.getTowerDamage(), gameScreen.getCurrentPlayer());
+				attackedUnit.damage(-unit.getTowerDamage(), gameScreen.getCurrentPlayer(), gameScreen);
 			else if (attackedUnit.isSwordsman())
-				unitKilled = attackedUnit.damage(-unit.getSwordsmanDamage(), gameScreen.getCurrentPlayer());
+				attackedUnit.damage(-unit.getSwordsmanDamage(), gameScreen.getCurrentPlayer(), gameScreen);
 			else
-				unitKilled = attackedUnit.damage(-unit.getNormalDamage(), gameScreen.getCurrentPlayer());
-			
-			//If the enemy unit was killed and this unit is not a ranged unit, move to the hex
-			if (unitKilled && unit.getAttackRange() <= 1)
-				unit.move(hex);
+				attackedUnit.damage(-unit.getNormalDamage(), gameScreen.getCurrentPlayer(), gameScreen);
 			
 			attacked = true;
 			break;
@@ -95,12 +90,13 @@ public class AttackTurnType extends TurnType implements HexTouchListener {
 			return false;
 		}
 		gameScreen.resetFog();
+		unit.setTurnType(this);
+		gameScreen.resetUnitMoveButtons();
+		unit.moveMade();
 		if (usable()) {
 			initiateSecondTime(gameScreen);
 		} else {
-			System.out.println("MoveAttackTurnType.java pleborino");
 			unit.setFinishedTurn(true);
-			gameScreen.resetUnitMoveButtons();
 			gameScreen.selectNextUnit();
 		}
 		return true;
@@ -108,7 +104,7 @@ public class AttackTurnType extends TurnType implements HexTouchListener {
 
 	@Override
 	public boolean usable() {
-		return !attacked;
+		return !attacked && !unit.isFinishedTurn() && (unit.getTurnTypeSet() == null || unit.getTurnTypeSet() == this);
 	}
 	
 	private boolean isUnitInRange () {

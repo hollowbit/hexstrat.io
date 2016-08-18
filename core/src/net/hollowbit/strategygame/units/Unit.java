@@ -10,6 +10,8 @@ import net.hollowbit.strategygame.gamecomponents.TurnType;
 import net.hollowbit.strategygame.screens.GameScreen;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.World;
+import net.hollowbit.strategygame.*;
+import net.hollowbit.strategygame.tools.*;
 
 public abstract class Unit {
 	
@@ -29,6 +31,7 @@ public abstract class Unit {
 	Texture overlay;
 	
 	boolean finishedTurn;
+	TurnType turnTypeSet;
 	
 	public Unit (World world, Player player, Hex hex, Texture image, Texture overlay, int health) {
 		this.goalX = world.getXFromMapPositionX(hex.getX());
@@ -48,22 +51,71 @@ public abstract class Unit {
 		player.addUnit(this);
 	}
 	
+	public void moveMade () {
+		if (defaultTurnType != null)
+			defaultTurnType.moveMade();
+
+		if (turnTypes != null) {
+			for (TurnType turnType : turnTypes) 
+				turnType.moveMade();
+		}
+	}
+	
+	public void disposeTurnTypes (GameScreen gameScreen) {
+		if (defaultTurnType != null)
+			defaultTurnType.dispose(gameScreen);
+		
+		if (turnTypes != null) {
+			for (TurnType turnType : turnTypes) 
+				turnType.dispose(gameScreen);
+		}
+	}
+	
+	public void setTurnType (TurnType turnType) {
+		turnTypeSet = turnType;
+	}
+	
+	public TurnType getTurnTypeSet () {
+		return turnTypeSet;
+	}
+	
 	public void turnStart (GameScreen gameScreen) {
 		finishedTurn = false;
+		turnTypeSet = null;
 		
-		damage(hex.getType().damage, null);//Apply damage from hex
+		if (hex.getType().damage != 0)
+			damage(hex.getType().damage, null, gameScreen);//Apply damage from hex
 		
-		if (defaultTurnType != null)
+		if (defaultTurnType != null) {
 			defaultTurnType.turnStart();
+			gameScreen.setSelectedTurnType(defaultTurnType);
+		}
 
 		if (turnTypes != null) {
 			for (TurnType turnType : turnTypes)
 				turnType.turnStart();
 		}
+		
+		if (getProduction() != 0)
+			gameScreen.getHexMessageManager().addHexMessage(new HexMessage("+" + getProduction() + "F", hex, world, Color.YELLOW), false);
 	}
 	
-	public boolean damage (int amount, Player damager) {
+	public boolean damage (int amount, Player damager, GameScreen gameScreen) {
+		//if health is full, dont add any more
+		if (health == maxHealth && amount > 0)
+			return false;
+			
 		health += amount;
+		if (health > maxHealth)
+			health = maxHealth;
+		
+		if (amount > 0)
+			gameScreen.getHexMessageManager().addHexMessage(new HexMessage("+" + amount, hex, world, Color.GREEN), true);
+		else if (amount < 0)
+			gameScreen.getHexMessageManager().addHexMessage(new HexMessage("" + amount, hex, world, Color.RED), true);
+		else
+			gameScreen.getHexMessageManager().addHexMessage(new HexMessage("SHIELD", hex, world, Color.ORANGE), true);
+		
 		if (health <= 0) {
 			player.removeUnit(this);
 			world.removeUnit(this);
@@ -95,6 +147,31 @@ public abstract class Unit {
 		batch.setColor(player.getColor());
 		batch.draw(overlay, x, y);
 		batch.setColor(Color.WHITE);
+		
+		//Draw health bar
+		drawHealthBar(batch);
+	}
+	
+	private void drawHealthBar (SpriteBatch batch) {
+		if (maxHealth > 6) {
+			int healthBarLength = Hex.SIZE  - 4;
+			float healthMultiplier = ((float) health / maxHealth);
+			batch.setColor(Color.BLACK);
+			batch.draw(StrategyGame.getGame().getAssetManager().getTexture("blank"), x + 1, y + Hex.SIZE, healthBarLength + 2, 6);
+			batch.setColor(Color.GREEN);
+			batch.draw(StrategyGame.getGame().getAssetManager().getTexture("blank"), x + 2, y + Hex.SIZE + 1, healthBarLength * healthMultiplier, 4);
+			batch.setColor(1, 1, 1, 1);
+		} else {
+			int padding = 18;
+			float startX = x + Hex.SIZE / 2 - (maxHealth * padding / 4);
+			int heartsToDraw = health / 2;
+			boolean drawHalfHeart = health % 2 == 1;
+			for (int i = 0; i < heartsToDraw; i++)
+				batch.draw(StrategyGame.getGame().getAssetManager().getTextureMap("hearts")[0][0], startX + i * padding, y + Hex.SIZE);
+			
+			if (drawHalfHeart)
+				batch.draw(StrategyGame.getGame().getAssetManager().getTextureMap("hearts")[0][1], startX + heartsToDraw * padding, y + Hex.SIZE);
+		}
 	}
 	
 	public float getX () {
@@ -153,10 +230,10 @@ public abstract class Unit {
 		return finishedTurn;
 	}
 	
-	public int getProduction () {return 0;}
+	public float getProduction () {return 0;}
 	public int getVisibilityRange () {return 2;}
 	public boolean isTower () {return false;}//If true, it is expected/assumed that this unit doesn't move
-	public int getMoveSpeed () {return 1;}
+	public int getMoveSpeed () {return 2;}
 	public int getAttackRange () {return 1;}
 	public int getHorsemanDamage () {return 2;}
 	public int getSwordsmanDamage () {return 2;}
