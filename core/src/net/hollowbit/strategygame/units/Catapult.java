@@ -2,7 +2,6 @@ package net.hollowbit.strategygame.units;
 
 import net.hollowbit.strategygame.StrategyGame;
 import net.hollowbit.strategygame.gamecomponents.Player;
-import net.hollowbit.strategygame.gamecomponents.turntypes.MoveAttackTurnType;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.World;
 import net.hollowbit.strategygame.gamecomponents.*;
@@ -15,7 +14,7 @@ public class Catapult extends Unit {
 	public Catapult (World world, Player player, Hex hex) {
 		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("catapult"), StrategyGame.getGame().getAssetManager().getTexture("catapult-overlay"), HEALTH);
 		this.defaultTurnType = new MoveAttackTurnType(this);
-		this.turnTypes = new TurnType[]{new HealTurnType(this)};
+		this.turnTypes = new TurnType[]{new HealTurnType(this), new DoNothingTurnType(this)};
 	}
 	
 	@Override

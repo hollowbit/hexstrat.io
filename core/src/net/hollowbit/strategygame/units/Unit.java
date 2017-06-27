@@ -230,6 +230,10 @@ public abstract class Unit {
 		return finishedTurn;
 	}
 	
+	public boolean isDead() {
+		return health <= 0;
+	}
+	
 	public float getProduction () {return 0;}
 	public int getVisibilityRange () {return 2;}
 	public boolean isTower () {return false;}//If true, it is expected/assumed that this unit doesn't move

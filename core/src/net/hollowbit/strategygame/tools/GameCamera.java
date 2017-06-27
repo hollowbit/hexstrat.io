@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import net.hollowbit.strategygame.StrategyGame;
+import net.hollowbit.strategygame.screens.GameScreen;
 import net.hollowbit.strategygame.units.Unit;
 import net.hollowbit.strategygame.world.Hex;
 
@@ -51,9 +53,19 @@ public class GameCamera {
 		}
 		
 		//Draw camera
-		if (Gdx.input.isTouched()) {
-			goal = null;
-			cam.translate(-Gdx.input.getDeltaX() * cam.zoom / UNITS_PER_PIXEL, Gdx.input.getDeltaY() * cam.zoom / UNITS_PER_PIXEL);
+		if (StrategyGame.getGame().getCurrentScreen() != null && StrategyGame.getGame().getCurrentScreen() instanceof GameScreen) {
+			GameScreen screen = (GameScreen) StrategyGame.getGame().getCurrentScreen();
+			if (screen.getWorld() != null && screen.getWorld().getMap() != null) {
+				if (Gdx.input.isTouched()) {
+					goal = null;
+					cam.translate(-Gdx.input.getDeltaX() * cam.zoom / UNITS_PER_PIXEL, Gdx.input.getDeltaY() * cam.zoom / UNITS_PER_PIXEL);
+					
+						if (cam.position.x + cam.viewportWidth * cam.zoom / 2 < Hex.SIZE || cam.position.y + cam.viewportHeight * cam.zoom / 2 < Hex.SIZE
+								|| cam.position.x - cam.viewportWidth * cam.zoom / 2 > screen.getWorld().getMap().getRenderWidth() - Hex.SIZE || cam.position.y - cam.viewportWidth * cam.zoom / 2 > screen.getWorld().getMap().getRenderHeight() - Hex.SIZE) {
+							cam.translate(Gdx.input.getDeltaX() * cam.zoom / UNITS_PER_PIXEL, -Gdx.input.getDeltaY() * cam.zoom / UNITS_PER_PIXEL);
+						}
+				}
+			}
 		}
 		
 		/*if (ArchipeloClient.getGame().getWorld() != null && ArchipeloClient.getGame().getWorld().getMap() != null) {
@@ -91,6 +103,10 @@ public class GameCamera {
 	public void zoom (float zoom) {
 		cam.zoom = zoom;
 		cam.update();
+	}
+	
+	public float getZoom () {
+		return cam.zoom;
 	}
 	
 	public void focusOnUnit (Unit unitToFocusOn) {

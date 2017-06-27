@@ -10,20 +10,21 @@ import net.hollowbit.strategygame.StrategyGame;
 
 public enum HexType {
 	
-	GRASS(0, 0, 0, false, 0, 0.5f, 1),
-	WATER(1, 1, 0, true, 0, 0, 0, 2, 0.8f),
-	FOREST(2, 3, 0, false, 0, 0.25f, 2),
-	HILLS(3, 4, 0, false, 0, 0.25f, 2),
-	LAVA(4, 5, 0, true, 0, 0, 0, 2, 0.8f),
-	POISON(5, 7, 0, false, -1, 0, 1),
-	SPRING(6, 8, 0, false, 1, 0.75f, 1),
-	FARMLAND(7, 9, 0, false, 0, 1, 1),
-	HELL(8, 10, 0, false, 0, 0.5f, 1),
-	HELL_POISON(9, 11, 0, false, -1, 0, 1),
-	HELL_HEALING(10, 12, 0, false, 1, 1, 1),
-	HELL_CEMETARY(11, 13, 0, false, 0, 1, 2),
-	HELL_RUINS(12, 14, 0, false, 0, 0.25f, 2);
+	GRASS(0, null, 0, 0, false, 0, 0.5f, 1),
+	WATER(1, null, 1, 0, true, 0, 0, 0, 2, 0.8f),
+	FOREST(2, GRASS, 3, 0, false, 0, 0.25f, 2),
+	HILLS(3, GRASS, 4, 0, false, 0, 0.25f, 2),
+	LAVA(4, null, 5, 0, true, 0, 0, 0, 2, 0.8f),
+	POISON(5, GRASS, 7, 0, false, -1, 0, 1),
+	SPRING(6, GRASS, 8, 0, false, 1, 0.75f, 1),
+	FARMLAND(7, GRASS, 9, 0, false, 0, 1, 1),
+	HELL(8, null, 10, 0, false, 0, 0.5f, 1),
+	HELL_LAVA(9, HELL, 11, 0, false, -1, 0, 1),
+	HELL_HEALING(10, HELL, 12, 0, false, 1, 1, 1),
+	HELL_CEMETARY(11, HELL, 13, 0, false, 0, 0.75f, 2),
+	HELL_RUINS(12, HELL, 14, 0, false, 0, 0.25f, 2);
 	
+	HexType normalVersion;
 	TextureRegion texture;
 	Animation animation;
 	public int id;
@@ -35,12 +36,13 @@ public enum HexType {
 	int animationFrames;
 	float animationTime;
 	
-	private HexType (int id, int spriteSheetX, int spriteSheetY, boolean collidable, int damage, float production, int movesUsed) {
-		this(id, spriteSheetX, spriteSheetY, collidable, damage, production, movesUsed, 0, 0);
+	private HexType (int id, HexType normalVersion, int spriteSheetX, int spriteSheetY, boolean collidable, int damage, float production, int movesUsed) {
+		this(id, normalVersion, spriteSheetX, spriteSheetY, collidable, damage, production, movesUsed, 0, 0);
 	}
 	
-	private HexType (int id, int spriteSheetX, int spriteSheetY, boolean collidable, int damage, float production, int movesUsed, int animationFrames, float animationTime) {
+	private HexType (int id, HexType normalVersion, int spriteSheetX, int spriteSheetY, boolean collidable, int damage, float production, int movesUsed, int animationFrames, float animationTime) {
 		this.id = id;
+		this.normalVersion = normalVersion;
 		this.spriteSheetX = spriteSheetX;
 		this.spriteSheetY = spriteSheetY;
 		this.collidable = collidable;
@@ -67,6 +69,13 @@ public enum HexType {
 			return animation.getKeyFrame(forceNoAnimation ? 0:StrategyGame.STATETIME, true);
 		else
 			return texture;
+	}
+	
+	public TextureRegion getNormalTexture (boolean forceNoAnimation) {
+		if (normalVersion == null)
+			return getTexture(forceNoAnimation);
+		else
+			return normalVersion.getTexture(forceNoAnimation);
 	}
 	
 	public boolean isAnimated () {

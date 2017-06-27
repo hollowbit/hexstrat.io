@@ -34,7 +34,7 @@ public class GameOverScreen extends Screen {
 		playAgainButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				StrategyGame.getGame().getScreenManager().setScreen(new GameScreen());//When play again is clicked, open a new game screen
+				StrategyGame.getGame().getScreenManager().setScreen(new MapPickerScreen());//When play again is clicked, open a new game screen
 				super.clicked(event, x, y);
 			}
 		});

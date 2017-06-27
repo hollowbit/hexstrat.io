@@ -39,7 +39,7 @@ public class BuildFarmTurnType extends TurnType {
 
 	@Override
 	public boolean usable () {
-		return true;
+		return !unit.isFinishedTurn();
 	}
 
 }

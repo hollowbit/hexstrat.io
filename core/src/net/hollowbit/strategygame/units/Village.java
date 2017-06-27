@@ -3,8 +3,10 @@ package net.hollowbit.strategygame.units;
 import net.hollowbit.strategygame.StrategyGame;
 import net.hollowbit.strategygame.gamecomponents.Player;
 import net.hollowbit.strategygame.gamecomponents.TurnType;
+import net.hollowbit.strategygame.gamecomponents.turntypes.AttackTurnType;
 import net.hollowbit.strategygame.gamecomponents.turntypes.BuildTurnType;
 import net.hollowbit.strategygame.gamecomponents.turntypes.ChooseSpawnTurnType;
+import net.hollowbit.strategygame.gamecomponents.turntypes.DoNothingTurnType;
 import net.hollowbit.strategygame.screens.GameOverScreen;
 import net.hollowbit.strategygame.screens.GameScreen;
 import net.hollowbit.strategygame.world.Hex;
@@ -17,13 +19,15 @@ public class Village extends Unit {
 	private int buildProdLeft = 1;
 	private BuildType unitBeingBuilt;
 	private Hex spawn;
+	private AttackTurnType attackTurnType;
 	
 	private boolean firstUnitBuilt = false;//If false, make all unit purchases only cost 1
 	
 	public Village(World world, Player player, Hex hex) {
 		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("village"), StrategyGame.getGame().getAssetManager().getTexture("village-overlay"), MAX_HEALTH);
 		this.defaultTurnType = new BuildTurnType(this);
-		this.turnTypes = new TurnType[]{new ChooseSpawnTurnType(this)};
+		this.attackTurnType = new AttackTurnType(this);
+		this.turnTypes = new TurnType[]{attackTurnType, new ChooseSpawnTurnType(this), new DoNothingTurnType(this)};
 		this.unitBeingBuilt = null;
 		this.spawn = null;
 	}
@@ -108,6 +112,15 @@ public class Village extends Unit {
 			StrategyGame.getGame().getScreenManager().setScreen(new GameOverScreen(damager));
 		}
 		return dead;
+	}
+	
+	public BuildType getUnitBeingBuilt() {
+		return unitBeingBuilt;
+	}
+	
+	@Override
+	public int getAttackRange() {
+		return 2;
 	}
 	
 	@Override

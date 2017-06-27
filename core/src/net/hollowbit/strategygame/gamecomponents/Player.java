@@ -15,6 +15,7 @@ public class Player {
 	private Unit lastMovedUnit;
 	
 	private float production;
+	private float food;
 	
 	public Player (String name, Color color) {
 		this.name = name;
@@ -27,6 +28,7 @@ public class Player {
 		production = 0;
 		for (Unit unit : units)
 			production += unit.getProduction();
+		food += production;
 	}
 	
 	//Check if a particular unit belongs to this player
@@ -49,6 +51,10 @@ public class Player {
 	
 	public Color getColor () {
 		return color;
+	}
+	
+	public float getFood() {
+		return food;
 	}
 	
 	public void addUnit (Unit unit) {

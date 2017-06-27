@@ -8,10 +8,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import net.hollowbit.strategygame.screens.GameScreen;
+import net.hollowbit.strategygame.screens.MapPickerScreen;
 import net.hollowbit.strategygame.tools.AssetManager;
 import net.hollowbit.strategygame.tools.FontManager;
 import net.hollowbit.strategygame.tools.GameCamera;
+import net.hollowbit.strategygame.tools.Screen;
 import net.hollowbit.strategygame.tools.ScreenManager;
 import net.hollowbit.strategygame.tools.UiCamera;
 import net.hollowbit.strategygame.world.HexType;
@@ -40,6 +41,8 @@ public class StrategyGame extends Game {
 		batch = new SpriteBatch();
 		
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+		skin.getFont("large-font").getData().markupEnabled = true;
+		skin.getFont("default-font").getData().markupEnabled = true;
 		
 		//Load textures
 		HexType.loadTextures();
@@ -71,7 +74,7 @@ public class StrategyGame extends Game {
 		assetManager.putTexture("beast", new Texture("units/beast.png"));
 		assetManager.putTexture("beast-overlay", new Texture("units/beast_overlay.png"));
 		
-		screenManager = new ScreenManager(new GameScreen());
+		screenManager = new ScreenManager(new MapPickerScreen());
 	}
 
 	@Override
@@ -95,6 +98,10 @@ public class StrategyGame extends Game {
 		batch.begin();
 		screenManager.renderUi(batch, uiCamera.getWidth(), uiCamera.getHeight());
 		batch.end();
+	}
+	
+	public Screen getCurrentScreen() {
+		return screenManager.getCurrentScreen();
 	}
 	
 	@Override

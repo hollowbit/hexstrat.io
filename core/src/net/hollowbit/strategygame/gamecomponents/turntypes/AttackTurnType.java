@@ -50,10 +50,10 @@ public class AttackTurnType extends TurnType implements HexTouchListener {
 		//Change overlay for attack hexes
 		for (Hex hex : unit.getHex().getSurroundingHexesInRange(unit.getAttackRange())) {
 			if (hex.getUnitOnHex() != null && !unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {
-					if (attacked)//If this unit already attacked, then don't let it attack again
-						hex.setOverlayColor(OverlayColor.INVALID);
-					else
-						hex.setOverlayColor(OverlayColor.ATTACK);
+				if (attacked)//If this unit already attacked, then don't let it attack again
+					hex.setOverlayColor(OverlayColor.INVALID);
+				else
+					hex.setOverlayColor(OverlayColor.ATTACK);
 			}
 		}
 	}
@@ -104,10 +104,10 @@ public class AttackTurnType extends TurnType implements HexTouchListener {
 
 	@Override
 	public boolean usable() {
-		return !attacked && !unit.isFinishedTurn() && (unit.getTurnTypeSet() == null || unit.getTurnTypeSet() == this);
+		return !attacked && (unit.getTurnTypeSet() == null || unit.getTurnTypeSet() == this);
 	}
 	
-	private boolean isUnitInRange () {
+	public boolean isUnitInRange () {
 		for (Hex hex : unit.getHex().getSurroundingHexesInRange(unit.getAttackRange())) {
 			if (hex.getUnitOnHex() != null && !unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {
 					if (attacked)//If this unit already attacked, then don't let it attack again

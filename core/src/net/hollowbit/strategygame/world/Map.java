@@ -34,6 +34,10 @@ public class Map {
 		}
 	}
 	
+	public MapType getType() {
+		return type;
+	}
+	
 	public Hex[][] getMap () {
 		return map;
 	}
@@ -52,6 +56,14 @@ public class Map {
 	
 	public Hex getSpawn2 () {
 		return spawn2;
+	}
+	
+	public float getRenderWidth() {
+		return getWidth() * Hex.OVERLAP_SIZE;
+	}
+	
+	public float getRenderHeight() {
+		return getHeight() * Hex.OVERLAP_SIZE;
 	}
 	
 	public int getWidth () {

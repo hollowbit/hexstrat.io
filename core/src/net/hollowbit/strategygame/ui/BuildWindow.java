@@ -17,6 +17,7 @@ import net.hollowbit.strategygame.units.Village.BuildType;
 public class BuildWindow extends Window {
 	
 	List<BuildType> unitList;
+	Label infoLabel;
 	Label costLabel;
 	Label descLabel;
 	TextButton buildButton;
@@ -35,6 +36,14 @@ public class BuildWindow extends Window {
 		this.setWidth(400);
 		
 		//Add ui elements
+		if (village.getUnitBeingBuilt() != null && village.isDoneBuilding()) {
+			infoLabel = new Label("[WHITE] New [GOLD]" + village.getUnitBeingBuilt().name.toLowerCase() + "[WHITE] built! What would you like to build next?", getSkin());
+			infoLabel.setWrap(true);
+			infoLabel.setWidth(500);
+			add(infoLabel).width(500).height(150);
+			row();
+		}
+		
 		unitList = new List<BuildType>(getSkin());
 		if (village.isFirstBuild())
 			unitList.setItems(Village.BuildType.FIRST_BUILD_VALUES);

@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,20 +25,27 @@ import net.hollowbit.strategygame.gamecomponents.Player;
 import net.hollowbit.strategygame.gamecomponents.TurnType;
 import net.hollowbit.strategygame.tools.FontManager.Fonts;
 import net.hollowbit.strategygame.tools.FontManager.Sizes;
+import net.hollowbit.strategygame.tools.HexMessageManager;
 import net.hollowbit.strategygame.tools.HexTouchChecker;
 import net.hollowbit.strategygame.tools.HexTouchListener;
 import net.hollowbit.strategygame.tools.Screen;
 import net.hollowbit.strategygame.ui.BuildWindow;
+import net.hollowbit.strategygame.units.Catapult;
+import net.hollowbit.strategygame.units.Phalanx;
+import net.hollowbit.strategygame.units.Swordsman;
 import net.hollowbit.strategygame.units.Unit;
 import net.hollowbit.strategygame.units.Village;
+import net.hollowbit.strategygame.units.Worker;
 import net.hollowbit.strategygame.world.Hex;
+import net.hollowbit.strategygame.world.MapType;
 import net.hollowbit.strategygame.world.Hex.OverlayColor;
 import net.hollowbit.strategygame.world.World;
-import net.hollowbit.strategygame.tools.*;
 
 public class GameScreen extends Screen implements InputProcessor {
 	
 	private static final int END_TURN_BUTTON_PADDING = 10;
+	private static final float MIN_ZOOM = 0.3f;
+	private static final float MAX_ZOOM = 2.1f;
 	
 	Stage stage;
 	World world;
@@ -57,6 +65,8 @@ public class GameScreen extends Screen implements InputProcessor {
 	boolean endTurnFlag = false;;
 	
 	TextButton endTurnButton;
+	TextButton zoomInButton;
+	TextButton zoomOutButton;
 	
 	BuildWindow buildWindow = null;
 	
@@ -65,13 +75,16 @@ public class GameScreen extends Screen implements InputProcessor {
 	TurnType selectedTurnType = null;
 	
 	HexMessageManager hexMessageManager;
+	boolean canMoveUnit = false;
 	
 	boolean privacyMode;//enabled to prevent players from seeing the other player's game between hotseat turns
 	
-	public GameScreen () {
+	public GameScreen (MapType mapType) {
 		stage = new Stage(StrategyGame.getGame().getUiCamera().getScreenViewport(), StrategyGame.getGame().getBatch());
-		world = new World("grasslands");
+		world = new World(mapType.id);
 		hexMessageManager = new HexMessageManager();
+		
+		StrategyGame.getGame().getGameCamera().zoom(1);
 		
 		turnTypeButtons = new ArrayList<TextButton>();
 		hexTouchListeners = new ArrayList<HexTouchListener>();
@@ -89,6 +102,7 @@ public class GameScreen extends Screen implements InputProcessor {
 		//Give each player a village to start
 		world.addUnit(new Village(world, player1, world.getSpawn1()));
 		world.addUnit(new Village(world, player2, world.getSpawn2()));
+		world.addUnit(new Swordsman(world, player1, world.getMap().getMap()[9][8]));
 		
 		//Add ui
 		endTurnButton = new TextButton("End Turn", StrategyGame.getGame().getSkin(), "large");
@@ -97,12 +111,68 @@ public class GameScreen extends Screen implements InputProcessor {
 		endTurnButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				if (!windowOpen)
-					endTurn();
+				if (!windowOpen) {
+					if (canMoveUnit)
+						selectNextUnit();
+					else
+						endTurn();
+				}
 				super.clicked(event, x, y);
 			}
 		});
 		stage.addActor(endTurnButton);
+		
+		zoomInButton = new TextButton("+", StrategyGame.getGame().getSkin(), "large");
+		zoomOutButton = new TextButton("-", StrategyGame.getGame().getSkin(), "large");
+		zoomInButton.setBounds(0, 0, 50, 22);
+		zoomInButton.setPosition(Gdx.graphics.getWidth() - endTurnButton.getWidth() - END_TURN_BUTTON_PADDING * 2 - zoomInButton.getWidth(), END_TURN_BUTTON_PADDING + 22 + 6);
+		zoomInButton.addListener(new ClickListener() {
+			
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				float zoom = StrategyGame.getGame().getGameCamera().getZoom();
+				if (zoom > MIN_ZOOM) {
+					zoom -= 0.3f;
+				}
+
+				if (zoom <= MIN_ZOOM) {
+					zoomInButton.setDisabled(true);
+					zoom = MIN_ZOOM;
+				}
+				
+				StrategyGame.getGame().getGameCamera().zoom(zoom);
+				
+				zoomOutButton.setDisabled(false);
+				super.clicked(event, x, y);
+			}
+			
+		});
+		stage.addActor(zoomInButton);
+		
+		zoomOutButton.setBounds(0, 0, 50, 22);
+		zoomOutButton.setPosition(Gdx.graphics.getWidth() - endTurnButton.getWidth() - END_TURN_BUTTON_PADDING * 2 - zoomOutButton.getWidth(), END_TURN_BUTTON_PADDING);
+		zoomOutButton.addListener(new ClickListener() {
+			
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				float zoom = StrategyGame.getGame().getGameCamera().getZoom();
+				if (zoom < MAX_ZOOM) {
+					zoom += 0.3f;
+				}
+
+				if (zoom >= MAX_ZOOM) {
+					zoomOutButton.setDisabled(true);
+					zoom = MAX_ZOOM;
+				}
+				
+				StrategyGame.getGame().getGameCamera().zoom(zoom);
+				
+				zoomInButton.setDisabled(false);
+				super.clicked(event, x, y);
+			}
+			
+		});
+		stage.addActor(zoomOutButton);
 		
 		resetFog();
 		startTurn();
@@ -118,15 +188,39 @@ public class GameScreen extends Screen implements InputProcessor {
 		hexMessageManager.update(deltaTime);
 	}
 	
-	public void selectNextUnit () {
+	/**
+	 * Returns whether there was a next unit to select
+	 * @return
+	 */
+	public boolean selectNextUnit () {
 		//Loop through player's units to find an unused one
+		boolean foundUnit = false;
 		for (Unit unit : currentPlayer.getUnits()) {
-			if (!unit.isFinishedTurn() && unit != selectedUnit)
+			if (!unit.isFinishedTurn() && unit != selectedUnit) {
 				selectUnit(unit);
+				foundUnit = true;
+			}
 		}
+		
+		if (!foundUnit) {
+			endTurnButton.setText("End Turn");
+			canMoveUnit = false;
+		}
+		return foundUnit;
 	}
 	
 	public void selectUnit (Unit unit) {
+		boolean foundUnit = false;
+		for (Unit testUnit : currentPlayer.getUnits()) {
+			if (!testUnit.isFinishedTurn() && testUnit != unit)
+				foundUnit = true;
+		}
+		
+		if (!foundUnit) {
+			endTurnButton.setText("End Turn");
+			canMoveUnit = false;
+		}
+		
 		//Dispose of current unit turn types before setting a new one
 		disposeOfSelectedUnit();
 		selectedUnit = unit;
@@ -189,6 +283,8 @@ public class GameScreen extends Screen implements InputProcessor {
 	@Override
 	public void resize(int width, int height) {
 		endTurnButton.setPosition(width - endTurnButton.getWidth() - END_TURN_BUTTON_PADDING, END_TURN_BUTTON_PADDING);
+		zoomOutButton.setPosition(Gdx.graphics.getWidth() - endTurnButton.getWidth() - END_TURN_BUTTON_PADDING * 2 - zoomOutButton.getWidth(), END_TURN_BUTTON_PADDING);
+		zoomInButton.setPosition(Gdx.graphics.getWidth() - endTurnButton.getWidth() - END_TURN_BUTTON_PADDING * 2 - zoomInButton.getWidth(), END_TURN_BUTTON_PADDING + 22 + 6);
 		if (buildWindow != null)
 			buildWindow.setPosition(width / 2 - buildWindow.getWidth() / 2, height / 2 - buildWindow.getHeight() / 2);
 		super.resize(width, height);
@@ -196,6 +292,9 @@ public class GameScreen extends Screen implements InputProcessor {
 	
 	@Override
 	public void render(SpriteBatch batch, float width, float height) {
+		Gdx.gl.glClearColor(world.getMap().getType().getBackgroundColor().r, world.getMap().getType().getBackgroundColor().g, world.getMap().getType().getBackgroundColor().b, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
 		if (!privacyMode) {
 			world.render(batch, currentPlayer);
 		
@@ -268,14 +367,20 @@ public class GameScreen extends Screen implements InputProcessor {
 		for (Unit unit : currentUnits)
 			unit.turnStart(this);
 		
+		endTurnButton.setText("Next Unit");
+		canMoveUnit = true;
+		
 		//Depending on whether the village is ready to build something new, zoom to it, or the last used unit
-		if (!currentPlayer.getVillage().isDoneBuilding())
+		if (!currentPlayer.getVillage().isDoneBuilding()) {
 			//If no unit was last used, zoom to village, but don't select it
-			if (player1.getLastMovedUnit() != null)
+			if (currentPlayer.getLastMovedUnit() != null && !currentPlayer.getLastMovedUnit().isDead())
 				selectUnit(currentPlayer.getLastMovedUnit());
-			else
+			else if (currentPlayer.getLastMovedUnit().isDead()) {
+				if (!selectNextUnit())
+					StrategyGame.getGame().getGameCamera().setGoal(new Vector2(currentPlayer.getVillage().getX(), currentPlayer.getVillage().getY()));
+			} else
 				StrategyGame.getGame().getGameCamera().setGoal(new Vector2(currentPlayer.getVillage().getX(), currentPlayer.getVillage().getY()));
-		else {
+		} else {
 			selectUnit(currentPlayer.getVillage());
 		}
 	}
@@ -363,7 +468,20 @@ public class GameScreen extends Screen implements InputProcessor {
 	public HexMessageManager getHexMessageManager () {
 		return hexMessageManager;
 	}
-
+	
+	public void openMessageWindow(String title, String text) {
+		Dialog dialog = new Dialog(title, StrategyGame.getGame().getSkin(), "dialog") {
+		    public void result(Object obj) {
+		    	this.remove();
+		    }
+		};
+		dialog.text(text);
+		dialog.button("Close", null);
+		dialog.key(Keys.ENTER, null);
+		dialog.key(Keys.ESCAPE, null);
+		dialog.show(stage);
+	}
+	
 	@Override
 	public boolean keyDown(int keycode) {return false;}
 

@@ -6,7 +6,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.hollowbit.strategygame.StrategyGame;
+import net.hollowbit.strategygame.units.Farm;
+import net.hollowbit.strategygame.units.Tower;
 import net.hollowbit.strategygame.units.Unit;
+import net.hollowbit.strategygame.units.Village;
 
 public class Hex {
 	
@@ -36,7 +39,10 @@ public class Hex {
 	}
 	
 	public void render (SpriteBatch batch, int x, int y) {
-		batch.draw(type.getTexture(overlay == OverlayColor.FOG), x, y);
+		if (unitOnHex instanceof Tower || unitOnHex instanceof Farm || unitOnHex instanceof Village)
+			batch.draw(type.getNormalTexture(overlay == OverlayColor.FOG), x, y);
+		else
+			batch.draw(type.getTexture(overlay == OverlayColor.FOG), x, y);
 		
 		//Draw overlay
 		if (overlay != OverlayColor.NONE) {

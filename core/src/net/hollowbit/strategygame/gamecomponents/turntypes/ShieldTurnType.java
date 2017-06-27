@@ -34,7 +34,7 @@ public class ShieldTurnType extends TurnType
 		if (usable()) {
 			uses--;
 			swordsman.setShielded(true);
-			unit.setFinishedTurn(true);
+			//unit.setFinishedTurn(true);
 			gameScreen.resetUnitMoveButtons();
 			unit.disposeTurnTypes(gameScreen);
 			gameScreen.selectNextUnit();
