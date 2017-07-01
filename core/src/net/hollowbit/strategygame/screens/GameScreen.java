@@ -30,12 +30,7 @@ import net.hollowbit.strategygame.tools.HexTouchChecker;
 import net.hollowbit.strategygame.tools.HexTouchListener;
 import net.hollowbit.strategygame.tools.Screen;
 import net.hollowbit.strategygame.ui.BuildWindow;
-import net.hollowbit.strategygame.units.Catapult;
-import net.hollowbit.strategygame.units.Phalanx;
-import net.hollowbit.strategygame.units.Swordsman;
-import net.hollowbit.strategygame.units.Unit;
-import net.hollowbit.strategygame.units.Village;
-import net.hollowbit.strategygame.units.Worker;
+import net.hollowbit.strategygame.units.*;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.MapType;
 import net.hollowbit.strategygame.world.Hex.OverlayColor;
@@ -102,7 +97,10 @@ public class GameScreen extends Screen implements InputProcessor {
 		//Give each player a village to start
 		world.addUnit(new Village(world, player1, world.getSpawn1()));
 		world.addUnit(new Village(world, player2, world.getSpawn2()));
-		world.addUnit(new Swordsman(world, player1, world.getMap().getMap()[9][8]));
+		world.addUnit(new Archer(world, player1, world.getMap().getMap()[9][8]));
+		world.addUnit(new Farm(world, player1, world.getMap().getMap()[0][0]));
+		world.addUnit(new Catapult(world, player1, world.getMap().getMap()[0][2]));
+		world.addUnit(new Beast(world, player1, world.getMap().getMap()[0][3]));
 		
 		//Add ui
 		endTurnButton = new TextButton("End Turn", StrategyGame.getGame().getSkin(), "large");
@@ -296,10 +294,12 @@ public class GameScreen extends Screen implements InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		if (!privacyMode) {
-			world.render(batch, currentPlayer);
+			world.renderHexes(batch);
 		
 			if (selectedUnit != null)
 				batch.draw(StrategyGame.getGame().getAssetManager().getTexture("selected-hex-border"), selectedUnit.getX(), selectedUnit.getY());
+			
+			world.renderUnits(batch);
 			
 			hexMessageManager.render(batch);
 		}
@@ -373,7 +373,7 @@ public class GameScreen extends Screen implements InputProcessor {
 		//Depending on whether the village is ready to build something new, zoom to it, or the last used unit
 		if (!currentPlayer.getVillage().isDoneBuilding()) {
 			//If no unit was last used, zoom to village, but don't select it
-			if (currentPlayer.getLastMovedUnit() != null && !currentPlayer.getLastMovedUnit().isDead())
+			if (currentPlayer.getLastMovedUnit() != null && !currentPlayer.getLastMovedUnit().isDead() && !currentPlayer.getLastMovedUnit().isFinishedTurn())
 				selectUnit(currentPlayer.getLastMovedUnit());
 			else if (currentPlayer.getLastMovedUnit().isDead()) {
 				if (!selectNextUnit())

@@ -12,6 +12,7 @@ import net.hollowbit.strategygame.screens.MapPickerScreen;
 import net.hollowbit.strategygame.tools.AssetManager;
 import net.hollowbit.strategygame.tools.FontManager;
 import net.hollowbit.strategygame.tools.GameCamera;
+import net.hollowbit.strategygame.tools.MusicManager;
 import net.hollowbit.strategygame.tools.Screen;
 import net.hollowbit.strategygame.tools.ScreenManager;
 import net.hollowbit.strategygame.tools.UiCamera;
@@ -25,6 +26,7 @@ public class StrategyGame extends Game {
 	private ScreenManager screenManager;
 	private FontManager fontManager;
 	private AssetManager assetManager;
+	private MusicManager musicManager;
 	private GameCamera gameCamera;
 	private UiCamera uiCamera;
 	private SpriteBatch batch;
@@ -73,6 +75,8 @@ public class StrategyGame extends Game {
 		assetManager.putTexture("catapult-overlay", new Texture("units/catapult_overlay.png"));
 		assetManager.putTexture("beast", new Texture("units/beast.png"));
 		assetManager.putTexture("beast-overlay", new Texture("units/beast_overlay.png"));
+		
+		musicManager = new MusicManager();
 		
 		screenManager = new ScreenManager(new MapPickerScreen());
 	}
@@ -130,6 +134,10 @@ public class StrategyGame extends Game {
 	
 	public AssetManager getAssetManager () {
 		return assetManager;
+	}
+	
+	public MusicManager getMusicManager() {
+		return musicManager;
 	}
 	
 	public Skin getSkin () {

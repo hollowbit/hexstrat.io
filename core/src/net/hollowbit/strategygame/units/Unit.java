@@ -157,9 +157,9 @@ public abstract class Unit {
 			int healthBarLength = Hex.SIZE  - 4;
 			float healthMultiplier = ((float) health / maxHealth);
 			batch.setColor(Color.BLACK);
-			batch.draw(StrategyGame.getGame().getAssetManager().getTexture("blank"), x + 1, y + Hex.SIZE, healthBarLength + 2, 6);
+			batch.draw(StrategyGame.getGame().getAssetManager().getTexture("blank"), x + 1, y + image.getHeight() + 4, healthBarLength + 2, 6);
 			batch.setColor(Color.GREEN);
-			batch.draw(StrategyGame.getGame().getAssetManager().getTexture("blank"), x + 2, y + Hex.SIZE + 1, healthBarLength * healthMultiplier, 4);
+			batch.draw(StrategyGame.getGame().getAssetManager().getTexture("blank"), x + 2, y + image.getHeight() + 5, healthBarLength * healthMultiplier, 4);
 			batch.setColor(1, 1, 1, 1);
 		} else {
 			int padding = 18;
@@ -167,10 +167,10 @@ public abstract class Unit {
 			int heartsToDraw = health / 2;
 			boolean drawHalfHeart = health % 2 == 1;
 			for (int i = 0; i < heartsToDraw; i++)
-				batch.draw(StrategyGame.getGame().getAssetManager().getTextureMap("hearts")[0][0], startX + i * padding, y + Hex.SIZE);
+				batch.draw(StrategyGame.getGame().getAssetManager().getTextureMap("hearts")[0][0], startX + i * padding, y + image.getHeight() + 4);
 			
 			if (drawHalfHeart)
-				batch.draw(StrategyGame.getGame().getAssetManager().getTextureMap("hearts")[0][1], startX + heartsToDraw * padding, y + Hex.SIZE);
+				batch.draw(StrategyGame.getGame().getAssetManager().getTextureMap("hearts")[0][1], startX + heartsToDraw * padding, y + image.getHeight() + 4);
 		}
 	}
 	

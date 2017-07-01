@@ -2,6 +2,10 @@ package net.hollowbit.strategygame.world;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import net.hollowbit.strategygame.units.Unit;
+import net.hollowbit.strategygame.units.Village;
+import net.hollowbit.strategygame.world.Hex.OverlayColor;
+
 public class Map {
 	
 	Hex[][] map;
@@ -28,9 +32,29 @@ public class Map {
 	
 	public void render (SpriteBatch batch) {
 		//Draw map
+		for (int x = 0; x < map[0].length; x++) {
+			for (int y = 0; y < map.length; y++)
+				map[map.length - y - 1][x].render(batch, getXFromMapPositionX(x), getYFromMapPositionY(map.length - y - 1, x));
+		}
+	}
+	
+	public void renderUnits (SpriteBatch batch) {
 		for (int y = 0; y < map.length; y++) {
-			for (int x = 0; x < map[0].length; x++)
-				map[y][x].render(batch, getXFromMapPositionX(x), getYFromMapPositionY(y, x));
+			for (int x = 0; x < map[0].length; x++) {
+				if (x % 2 == 0) {
+					Unit unit = map[map.length - y - 1][x].getUnitOnHex();
+					if (unit != null && unit.getHex().getOverlayColor() != OverlayColor.FOG || unit instanceof Village)//Only draw enemies in fog if they are villages
+						unit.render(batch);
+				}
+			}
+
+			for (int x = 0; x < map[0].length; x++) {
+				if (x % 2 == 1) {
+					Unit unit = map[map.length - y - 1][x].getUnitOnHex();
+					if (unit != null && unit.getHex().getOverlayColor() != OverlayColor.FOG || unit instanceof Village)//Only draw enemies in fog if they are villages
+						unit.render(batch);
+				}
+			}
 		}
 	}
 	
