@@ -75,6 +75,8 @@ public class StrategyGame extends Game {
 		assetManager.putTexture("catapult-overlay", new Texture("units/catapult_overlay.png"));
 		assetManager.putTexture("beast", new Texture("units/beast.png"));
 		assetManager.putTexture("beast-overlay", new Texture("units/beast_overlay.png"));
+		assetManager.putTexture("priest", new Texture("units/priest.png"));
+		assetManager.putTexture("priest-overlay", new Texture("units/priest_overlay.png"));
 		
 		musicManager = new MusicManager();
 		

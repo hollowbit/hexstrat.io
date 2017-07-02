@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -21,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.strategygame.StrategyGame;
+import net.hollowbit.strategygame.gamecomponents.GameSettings;
 import net.hollowbit.strategygame.gamecomponents.Player;
 import net.hollowbit.strategygame.gamecomponents.TurnType;
 import net.hollowbit.strategygame.tools.FontManager.Fonts;
@@ -30,9 +30,9 @@ import net.hollowbit.strategygame.tools.HexTouchChecker;
 import net.hollowbit.strategygame.tools.HexTouchListener;
 import net.hollowbit.strategygame.tools.Screen;
 import net.hollowbit.strategygame.ui.BuildWindow;
-import net.hollowbit.strategygame.units.*;
+import net.hollowbit.strategygame.units.Unit;
+import net.hollowbit.strategygame.units.Village;
 import net.hollowbit.strategygame.world.Hex;
-import net.hollowbit.strategygame.world.MapType;
 import net.hollowbit.strategygame.world.Hex.OverlayColor;
 import net.hollowbit.strategygame.world.World;
 
@@ -74,9 +74,9 @@ public class GameScreen extends Screen implements InputProcessor {
 	
 	boolean privacyMode;//enabled to prevent players from seeing the other player's game between hotseat turns
 	
-	public GameScreen (MapType mapType) {
+	public GameScreen (GameSettings settings) {
 		stage = new Stage(StrategyGame.getGame().getUiCamera().getScreenViewport(), StrategyGame.getGame().getBatch());
-		world = new World(mapType.id);
+		world = new World(settings.getMapId());
 		hexMessageManager = new HexMessageManager();
 		
 		StrategyGame.getGame().getGameCamera().zoom(1);
@@ -89,18 +89,14 @@ public class GameScreen extends Screen implements InputProcessor {
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		hexTouchChecker = new HexTouchChecker();
 
-		player1 = new Player("Player 1", Color.RED);
-		player2 = new Player("Player 2", Color.BLUE);
+		player1 = new Player(settings.getPlayer1Name(), settings.getPlayer1Color());
+		player2 = new Player(settings.getPlayer2Name(), settings.getPlayer2Color());
 		currentPlayer = player1;
 		privacyMode = true;
 		
 		//Give each player a village to start
 		world.addUnit(new Village(world, player1, world.getSpawn1()));
 		world.addUnit(new Village(world, player2, world.getSpawn2()));
-		world.addUnit(new Archer(world, player1, world.getMap().getMap()[9][8]));
-		world.addUnit(new Farm(world, player1, world.getMap().getMap()[0][0]));
-		world.addUnit(new Catapult(world, player1, world.getMap().getMap()[0][2]));
-		world.addUnit(new Beast(world, player1, world.getMap().getMap()[0][3]));
 		
 		//Add ui
 		endTurnButton = new TextButton("End Turn", StrategyGame.getGame().getSkin(), "large");
@@ -241,8 +237,10 @@ public class GameScreen extends Screen implements InputProcessor {
 			//return;
 		
 		ArrayList<TurnType> turnTypes = new ArrayList<TurnType>();
-		if (selectedUnit.getDefaultTurnType() != null)
+		if (selectedUnit.getDefaultTurnType() != null) {
 			turnTypes.add(selectedUnit.getDefaultTurnType());//Add default turn type button
+			selectedTurnType = selectedUnit.getDefaultTurnType();
+		}
 		
 		if (selectedUnit.getTurnTypes() != null)
 			turnTypes.addAll(Arrays.asList(selectedUnit.getTurnTypes()));

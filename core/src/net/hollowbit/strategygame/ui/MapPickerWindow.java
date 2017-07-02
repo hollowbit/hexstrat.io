@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.strategygame.StrategyGame;
+import net.hollowbit.strategygame.gamecomponents.GameSettings;
 import net.hollowbit.strategygame.screens.GameScreen;
 import net.hollowbit.strategygame.world.MapType;
 
@@ -33,7 +34,9 @@ public class MapPickerWindow extends Window {
 		playButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				StrategyGame.getGame().getScreenManager().setScreen(new GameScreen(list.getSelected()));//When play again is clicked, open a new game screen
+				GameSettings settings = new GameSettings();
+				settings.setMapId(list.getSelected().id);
+				StrategyGame.getGame().getScreenManager().setScreen(new GameScreen(settings));//When play again is clicked, open a new game screen
 				super.clicked(event, x, y);
 			}
 		});

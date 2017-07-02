@@ -193,6 +193,16 @@ public abstract class Unit {
 		this.goalY = world.getYFromMapPositionY(hex.getY(), hex.getX());
 	}
 	
+	/**
+	 * Converts this unit to another team
+	 * @param newPlayer
+	 */
+	public void convert (Player newPlayer) {
+		player.removeUnit(this);
+		newPlayer.addUnit(this);
+		this.player = newPlayer;
+	}
+	
 	public Hex getHex () {
 		return hex;
 	}

@@ -89,6 +89,9 @@ public class Village extends Unit {
 		case CATAPULT:
 			world.addUnit(new Catapult(world, player, hex));
 			break;
+		case PRIEST:
+			world.addUnit(new Priest(world, player, hex));
+			break;
 		case BEAST:
 			world.addUnit(new Beast(world, player, hex));
 			break;
@@ -166,7 +169,8 @@ public class Village extends Unit {
 		SWORDSMAN("Swordsman", "Unit that has a special \"shield\" mode that protects it from attacks. Effective against phalanx.", 5),
 		PHALANX("Phalanx", "Unit that has a \"berzerker\" mode that instantly kills units. Effective against horseman.", 5),
 		CATAPULT("Catapult", "Low health unit that deals 4 damage to farms, villages and towers.", 4),
-		BEAST("Beast", "Unit with lots of health and deals 4 damage to everything. Expensive though and is slow.", 10);
+		PRIEST("Priest", "Support unit that can heal other units. Can also convert enemy units to your faction.", 6),
+		BEAST("Beast", "Unit with lots of health and deals 4 damage to everything. Can also blitz every 3 turns. Expensive though and is slow.", 12);
 		
 		public static final BuildType[] FIRST_BUILD_VALUES = {HORSEMAN, WORKER, ARCHER, SWORDSMAN, PHALANX};
 		

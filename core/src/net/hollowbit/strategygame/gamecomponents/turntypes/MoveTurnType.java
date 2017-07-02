@@ -74,7 +74,6 @@ public class MoveTurnType extends TurnType implements HexTouchListener {
 			return false;
 		}
 		unit.setTurnType(this);
-		gameScreen.resetUnitMoveButtons();
 		movesLeft -= unit.getHex().getType().movesUsed;
 		unit.moveMade();
 		
@@ -85,6 +84,7 @@ public class MoveTurnType extends TurnType implements HexTouchListener {
 			unit.setFinishedTurn(true);
 			gameScreen.selectNextUnit();
 		}
+		gameScreen.resetUnitMoveButtons();
 		return true;
 	}
 

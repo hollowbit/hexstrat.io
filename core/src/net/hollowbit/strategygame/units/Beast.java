@@ -14,7 +14,7 @@ public class Beast extends Unit {
 	public Beast(World world, Player player, Hex hex) {
 		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("beast"), StrategyGame.getGame().getAssetManager().getTexture("beast-overlay"), HEALTH);
 		this.defaultTurnType = new MoveAttackTurnType(this);
-		this.turnTypes = new TurnType[]{new HealTurnType(this), new DoNothingTurnType(this)};
+		this.turnTypes = new TurnType[]{new BlitzTurnType(this), new HealTurnType(this), new DoNothingTurnType(this)};
 	}
 	
 	@Override

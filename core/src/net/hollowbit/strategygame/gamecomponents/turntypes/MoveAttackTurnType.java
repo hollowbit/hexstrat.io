@@ -102,7 +102,6 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 			return false;
 		}
 		unit.setTurnType(this);
-		gameScreen.resetUnitMoveButtons();
 		gameScreen.resetFog();
 		unit.moveMade();
 		if (usable()) {
@@ -111,6 +110,7 @@ public class MoveAttackTurnType extends TurnType implements HexTouchListener {
 			unit.setFinishedTurn(true);
 			gameScreen.selectNextUnit();
 		}
+		gameScreen.resetUnitMoveButtons();
 		return true;
 	}
 
