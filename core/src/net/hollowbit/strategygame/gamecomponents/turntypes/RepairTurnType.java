@@ -10,15 +10,15 @@ import net.hollowbit.strategygame.units.Unit;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.Hex.OverlayColor;
 
-public class HealOtherTurnType extends TurnType implements HexTouchListener {
-	
-	public HealOtherTurnType(Unit unit) {
+public class RepairTurnType extends TurnType implements HexTouchListener {
+
+	public RepairTurnType(Unit unit) {
 		super(unit);
 	}
 
 	@Override
 	public TextButton getTurnButton() {
-		return new TextButton("Heal", StrategyGame.getGame().getSkin());
+		return new TextButton("Repair", StrategyGame.getGame().getSkin());
 	}
 
 	@Override
@@ -36,11 +36,10 @@ public class HealOtherTurnType extends TurnType implements HexTouchListener {
 	private void initiateSecondTime (GameScreen gameScreen) {
 		//Change overlay for attack hexes
 		for (Hex hex : unit.getHex().getSurroundingHexesInRange(unit.getAttackRange())) {
-			if (hex.getUnitOnHex() != null && !hex.getUnitOnHex().isTower() && unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {
+			if (hex.getUnitOnHex() != null && hex.getUnitOnHex().isTower() && unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {
 				hex.setOverlayColor(OverlayColor.VALID);
 			}
 		}
-		unit.getHex().setOverlayColor(OverlayColor.VALID);
 	}
 
 	@Override
@@ -52,7 +51,7 @@ public class HealOtherTurnType extends TurnType implements HexTouchListener {
 
 	@Override
 	public boolean usable() {
-		return !unit.isFinishedTurn();
+		return isUnitInRange() && !unit.isFinishedTurn();
 	}
 
 	@Override
@@ -60,7 +59,7 @@ public class HealOtherTurnType extends TurnType implements HexTouchListener {
 		switch(hex.getOverlayColor()) {
 		case VALID:
 			Unit unitToHeal = hex.getUnitOnHex();
-			unitToHeal.damage(2, unit.getPlayer(), gameScreen);
+			unitToHeal.damage(3, unit.getPlayer(), gameScreen);
 			break;
 		default:
 			return false;
@@ -70,6 +69,15 @@ public class HealOtherTurnType extends TurnType implements HexTouchListener {
 		gameScreen.resetUnitMoveButtons();
 		gameScreen.selectNextUnit();
 		return true;
+	}
+
+	public boolean isUnitInRange () {
+		for (Hex hex : unit.getHex().getSurroundingHexesInRange(unit.getAttackRange())) {
+			if (hex.getUnitOnHex() != null && hex.getUnitOnHex().isTower() && unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

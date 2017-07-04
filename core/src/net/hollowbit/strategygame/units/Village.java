@@ -112,7 +112,7 @@ public class Village extends Unit {
 		
 		//Since this is the village, if it is dead, then the game is over
 		if (dead) {
-			StrategyGame.getGame().getScreenManager().setScreen(new GameOverScreen(damager));
+			StrategyGame.getGame().getScreenManager().setScreen(new GameOverScreen(damager, gameScreen.getSettings()));
 		}
 		return dead;
 	}

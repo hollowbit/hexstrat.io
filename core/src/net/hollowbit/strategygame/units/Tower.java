@@ -14,7 +14,7 @@ public class Tower extends Unit {
 	public Tower(World world, Player player, Hex hex) {
 		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("tower"), StrategyGame.getGame().getAssetManager().getTexture("tower-overlay"), HEALTH);
 		this.defaultTurnType = new AttackTurnType(this);
-		this.turnTypes = new TurnType[]{new DoNothingTurnType(this)};
+		this.turnTypes = new TurnType[]{new DoNothingTurnType(this), new SelfDestructTurnType(this)};
 	}
 	
 	@Override

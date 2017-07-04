@@ -8,22 +8,23 @@ import com.badlogic.gdx.utils.Json;
 
 public enum MapType {
 	
-	GRASSLANDS("grasslands", "Grasslands", new Color(0.3f, 0.5f, 0.95f, 1f)),
-	HELL("hell", "Hell", new Color(0.1f, 0.02f, 0.02f, 1f));
+	GRASSLANDS("grasslands"),
+	HELL("hell"),
+	SKYLANDS("skylands"),
+	CHOKEPOINTISLAND("chokepointisland"),
+	LAVALAKE("lavalake");
 	
 	public String id;
-	String name;
 	MapData data;
 	Color backgroundColor;
 	
-	private MapType (String id, String name, Color backgroundColor) {
+	private MapType (String id) {
 		this.id = id;
-		this.name = name;
-		this.backgroundColor = backgroundColor;
 		
 		//Load map
 		Json json = new Json();
 		this.data = json.fromJson(MapData.class, Gdx.files.internal("maps/" + id + ".json").readString());
+		this.backgroundColor = new Color(data.r / 255f, data.g / 255f, data.b / 255f, 1);
 	}
 	
 	public MapData getData () {
@@ -36,7 +37,7 @@ public enum MapType {
 	
 	@Override
 	public String toString() {
-		return this.name;
+		return this.data.name;
 	}
 	
 	private static HashMap<String, MapType> mapTypes;

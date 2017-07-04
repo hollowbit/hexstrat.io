@@ -16,12 +16,15 @@ public class Map {
 	public Map (String mapId) {
 		this.type = MapType.getMapTypeById(mapId);
 		MapData data = type.data;
-		
 		//Load hexes
 		map = new Hex[data.data.length][data.data[0].length];
 		for (int r = 0; r < data.data.length; r++) {
 			for (int c = 0; c < data.data[0].length; c++) {
-				map[map.length - r - 1][c] = new Hex(HexType.getHexTypeById(data.data[r][c]), c, map.length - r - 1, this);
+				if (data.data[r][c] == 'z') {
+					map[map.length - r - 1][c] = new BlankHex(HexType.getHexTypeById(data.data[r][c]), c, map.length - r - 1, this);
+				} else {
+					map[map.length - r - 1][c] = new Hex(HexType.getHexTypeById(data.data[r][c]), c, map.length - r - 1, this);
+				}
 				if (map.length - r - 1 == data.spawnY1 && c == data.spawnX1)
 					spawn1 = map[map.length - r - 1][c];
 				if (map.length - r - 1 == data.spawnY2 && c == data.spawnX2)

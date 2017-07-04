@@ -246,7 +246,13 @@ public abstract class Unit {
 	
 	public float getProduction () {return 0;}
 	public int getVisibilityRange () {return 2;}
-	public boolean isTower () {return false;}//If true, it is expected/assumed that this unit doesn't move
+	
+	/**
+	 * Returns whether this unit is a building (village, tower, farm, etc)
+	 * If true, it is expected/assumed that this unit doesn't move
+	 * @return
+	 */
+	public boolean isTower () {return false;}
 	public int getMoveSpeed () {return 2;}
 	public int getAttackRange () {return 1;}
 	public int getHorsemanDamage () {return 2;}

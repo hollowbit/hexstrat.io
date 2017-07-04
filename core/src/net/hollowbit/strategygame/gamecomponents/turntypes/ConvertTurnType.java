@@ -9,10 +9,7 @@ import net.hollowbit.strategygame.screens.GameScreen;
 import net.hollowbit.strategygame.tools.HexMessage;
 import net.hollowbit.strategygame.tools.HexTouchListener;
 import net.hollowbit.strategygame.tools.StaticTools;
-import net.hollowbit.strategygame.units.Farm;
-import net.hollowbit.strategygame.units.Tower;
 import net.hollowbit.strategygame.units.Unit;
-import net.hollowbit.strategygame.units.Village;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.Hex.OverlayColor;
 
@@ -42,7 +39,7 @@ public class ConvertTurnType extends TurnType implements HexTouchListener {
 	private void initiateSecondTime (GameScreen gameScreen) {
 		//Change overlay for attack hexes
 		for (Hex hex : unit.getHex().getSurroundingHexesInRange(unit.getAttackRange())) {
-			if (hex.getUnitOnHex() != null && !(unit instanceof Village) && !(unit instanceof Tower) && !(unit instanceof Farm) && !unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {
+			if (hex.getUnitOnHex() != null && !hex.getUnitOnHex().isTower() && !unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex())) {
 				hex.setOverlayColor(OverlayColor.VALID);
 			}
 		}

@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-import net.hollowbit.strategygame.screens.MapPickerScreen;
+import net.hollowbit.strategygame.screens.MainMenuScreen;
 import net.hollowbit.strategygame.tools.AssetManager;
 import net.hollowbit.strategygame.tools.FontManager;
 import net.hollowbit.strategygame.tools.GameCamera;
@@ -80,12 +80,12 @@ public class StrategyGame extends Game {
 		
 		musicManager = new MusicManager();
 		
-		screenManager = new ScreenManager(new MapPickerScreen());
+		screenManager = new ScreenManager(new MainMenuScreen());
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0f, 0f, 0f, 1);
+		Gdx.gl.glClearColor(0.1f, 0.6f, 0.95f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		float deltaTime = Gdx.graphics.getDeltaTime();

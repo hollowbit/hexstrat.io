@@ -7,6 +7,7 @@ import net.hollowbit.strategygame.gamecomponents.turntypes.BuildFarmTurnType;
 import net.hollowbit.strategygame.gamecomponents.turntypes.BuildTowerTurnType;
 import net.hollowbit.strategygame.gamecomponents.turntypes.DoNothingTurnType;
 import net.hollowbit.strategygame.gamecomponents.turntypes.MoveTurnType;
+import net.hollowbit.strategygame.gamecomponents.turntypes.RepairTurnType;
 import net.hollowbit.strategygame.world.Hex;
 import net.hollowbit.strategygame.world.World;
 
@@ -17,7 +18,7 @@ public class Worker extends Unit {
 	public Worker(World world, Player player, Hex hex) {
 		super(world, player, hex, StrategyGame.getGame().getAssetManager().getTexture("worker"), StrategyGame.getGame().getAssetManager().getTexture("worker-overlay"), HEALTH);
 		this.defaultTurnType = new MoveTurnType(this);
-		this.turnTypes = new TurnType[]{new BuildTowerTurnType(this), new BuildFarmTurnType(this), new DoNothingTurnType(this)};
+		this.turnTypes = new TurnType[]{new BuildTowerTurnType(this), new BuildFarmTurnType(this), new RepairTurnType(this), new DoNothingTurnType(this)};
 	}
 
 }

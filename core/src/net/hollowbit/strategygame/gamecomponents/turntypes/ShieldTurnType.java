@@ -48,7 +48,7 @@ public class ShieldTurnType extends TurnType
 	@Override
 	public boolean usable()
 	{
-		return uses > 0 && !swordsman.isShielded() && !unit.isFinishedTurn() && (unit.getTurnTypeSet() == null || unit.getTurnTypeSet() == this);
+		return uses > 0 && !swordsman.isShielded() && !unit.isFinishedTurn();
 	}
 
 }

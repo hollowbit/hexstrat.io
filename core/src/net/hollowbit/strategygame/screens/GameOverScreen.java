@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.strategygame.StrategyGame;
+import net.hollowbit.strategygame.gamecomponents.GameSettings;
 import net.hollowbit.strategygame.gamecomponents.Player;
 import net.hollowbit.strategygame.tools.FontManager.Fonts;
 import net.hollowbit.strategygame.tools.FontManager.Sizes;
@@ -20,28 +21,38 @@ public class GameOverScreen extends Screen {
 	//Ui
 	Stage stage;
 	TextButton playAgainButton;
+	TextButton mainMenuButton;
 	
 	Player playerWhoWon;
 	
-	public GameOverScreen (Player playerWhoWon) {
+	public GameOverScreen (Player playerWhoWon, final GameSettings settings) {
 		this.playerWhoWon = playerWhoWon;
 		
 		//Load ui
 		stage = new Stage(StrategyGame.getGame().getUiCamera().getScreenViewport(), StrategyGame.getGame().getBatch());
 		Gdx.input.setInputProcessor(stage);
 		
-		playAgainButton = new TextButton("Play Again", StrategyGame.getGame().getSkin());
+		playAgainButton = new TextButton("Rematch", StrategyGame.getGame().getSkin());
 		playAgainButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				StrategyGame.getGame().getScreenManager().setScreen(new MapPickerScreen());//When play again is clicked, open a new game screen
+				StrategyGame.getGame().getScreenManager().setScreen(new GameScreen(settings));//When play again is clicked, open a new game screen
 				super.clicked(event, x, y);
 			}
 		});
 		playAgainButton.setPosition(Gdx.graphics.getWidth() / 2 - playAgainButton.getWidth() / 2, 300);
 		stage.addActor(playAgainButton);
 		
-		
+		mainMenuButton = new TextButton("Main Menu", StrategyGame.getGame().getSkin());
+		mainMenuButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				StrategyGame.getGame().getScreenManager().setScreen(new MainMenuScreen());
+				super.clicked(event, x, y);
+			}
+		});
+		mainMenuButton.setPosition(Gdx.graphics.getWidth() / 2 - mainMenuButton.getWidth() / 2, 250);
+		stage.addActor(mainMenuButton);
 	}
 	
 	@Override
@@ -70,6 +81,7 @@ public class GameOverScreen extends Screen {
 	@Override
 	public void resize(int width, int height) {
 		playAgainButton.setPosition(width / 2 - playAgainButton.getWidth() / 2, 300);
+		mainMenuButton.setPosition(Gdx.graphics.getWidth() / 2 - mainMenuButton.getWidth() / 2, 250);
 	}
 	
 }

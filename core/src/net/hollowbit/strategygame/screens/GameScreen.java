@@ -62,6 +62,7 @@ public class GameScreen extends Screen implements InputProcessor {
 	TextButton endTurnButton;
 	TextButton zoomInButton;
 	TextButton zoomOutButton;
+	TextButton exitButton;
 	
 	BuildWindow buildWindow = null;
 	
@@ -73,11 +74,14 @@ public class GameScreen extends Screen implements InputProcessor {
 	boolean canMoveUnit = false;
 	
 	boolean privacyMode;//enabled to prevent players from seeing the other player's game between hotseat turns
+	GameSettings settings;
 	
 	public GameScreen (GameSettings settings) {
+		this.settings = settings;
 		stage = new Stage(StrategyGame.getGame().getUiCamera().getScreenViewport(), StrategyGame.getGame().getBatch());
 		world = new World(settings.getMapId());
 		hexMessageManager = new HexMessageManager();
+		StrategyGame.getGame().getMusicManager().playNextTrack();
 		
 		StrategyGame.getGame().getGameCamera().zoom(1);
 		
@@ -115,6 +119,17 @@ public class GameScreen extends Screen implements InputProcessor {
 			}
 		});
 		stage.addActor(endTurnButton);
+		
+		exitButton = new TextButton("End Game", StrategyGame.getGame().getSkin());
+		exitButton.setPosition(Gdx.graphics.getWidth() - exitButton.getWidth() - END_TURN_BUTTON_PADDING, Gdx.graphics.getHeight() - END_TURN_BUTTON_PADDING - exitButton.getHeight());
+		exitButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				showConfirmExitWindow();
+				super.clicked(event, x, y);
+			}
+		});
+		stage.addActor(exitButton);
 		
 		zoomInButton = new TextButton("+", StrategyGame.getGame().getSkin(), "large");
 		zoomOutButton = new TextButton("-", StrategyGame.getGame().getSkin(), "large");
@@ -281,6 +296,8 @@ public class GameScreen extends Screen implements InputProcessor {
 		endTurnButton.setPosition(width - endTurnButton.getWidth() - END_TURN_BUTTON_PADDING, END_TURN_BUTTON_PADDING);
 		zoomOutButton.setPosition(Gdx.graphics.getWidth() - endTurnButton.getWidth() - END_TURN_BUTTON_PADDING * 2 - zoomOutButton.getWidth(), END_TURN_BUTTON_PADDING);
 		zoomInButton.setPosition(Gdx.graphics.getWidth() - endTurnButton.getWidth() - END_TURN_BUTTON_PADDING * 2 - zoomInButton.getWidth(), END_TURN_BUTTON_PADDING + 22 + 6);
+		exitButton.setPosition(Gdx.graphics.getWidth() - exitButton.getWidth() - END_TURN_BUTTON_PADDING, Gdx.graphics.getHeight() - END_TURN_BUTTON_PADDING - exitButton.getHeight());
+		
 		if (buildWindow != null)
 			buildWindow.setPosition(width / 2 - buildWindow.getWidth() / 2, height / 2 - buildWindow.getHeight() / 2);
 		super.resize(width, height);
@@ -436,6 +453,24 @@ public class GameScreen extends Screen implements InputProcessor {
 		dialog.show(stage);
 	}
 	
+	public void showConfirmExitWindow() {
+		Dialog dialog = new Dialog("Are you sure?", StrategyGame.getGame().getSkin(), "dialog") {
+		    public void result(Object obj) {
+		    	if (((Boolean) obj).booleanValue() == true)
+		    		StrategyGame.getGame().getScreenManager().setScreen(new GameOverScreen((currentPlayer == player1 ? player2 :  player1), settings));
+		    }
+		};
+		Label label = new Label("Are you sure you want to surrender to your enemy?", StrategyGame.getGame().getSkin());
+		label.setWrap(true);
+		dialog.add(label).width(400);
+		dialog.row();
+		dialog.button("Yes", true);
+		dialog.button("No", false);
+		dialog.key(Keys.ENTER, true);
+		dialog.key(Keys.ESCAPE, false);
+		dialog.show(stage);
+	}
+	
 	public void addHexTouchListener (HexTouchListener hexTouchListener) {
 		hexTouchListeners.add(hexTouchListener);
 	}
@@ -465,6 +500,10 @@ public class GameScreen extends Screen implements InputProcessor {
 	
 	public HexMessageManager getHexMessageManager () {
 		return hexMessageManager;
+	}
+	
+	public GameSettings getSettings() {
+		return settings;
 	}
 	
 	public void openMessageWindow(String title, String text) {

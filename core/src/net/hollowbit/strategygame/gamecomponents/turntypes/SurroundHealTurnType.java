@@ -26,7 +26,7 @@ public class SurroundHealTurnType extends TurnType {
 	public void initiate(GameScreen gameScreen) {
 		if (usable()) {
 			for (Hex hex : unit.getHex().getSurroundingHexesInRange(1)) {
-				if (hex.getUnitOnHex() != null && unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex()))
+				if (hex.getUnitOnHex() != null && !hex.getUnitOnHex().isTower() && unit.getPlayer().doesUnitBelongToPlayer(hex.getUnitOnHex()))
 					hex.getUnitOnHex().damage(1, unit.getPlayer(), gameScreen);
 			}
 			unit.setFinishedTurn(true);
