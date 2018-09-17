@@ -1,4 +1,4 @@
-This is just a little strategy game I amde for fun. I just wanted to test out hexagon mouse clicking but ended up making a game. There are no plans for any more updates (except making some better art) sice I am focusing on <a href="http:github.com/vedi0boy/ArchipeloClient/">Archipelo</a>
+This is just a little strategy game I amde for fun. I just wanted to test out hexagon mouse clicking but ended up making a game. There are no plans for any more updates.
 
 This project falls under the MIT license, basically meaning you can do whatever you want with the code and assets.
 
