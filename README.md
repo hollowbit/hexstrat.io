@@ -2,7 +2,7 @@ This is just a little strategy game I amde for fun. I just wanted to test out he
 
 This project falls under the MIT license, basically meaning you can do whatever you want with the code and assets.
 
-#License
+# License
 MIT License
 
 Copyright (c) 2016 Nathanael Maher
