@@ -1,8 +1,27 @@
-This is just a little strategy game I amde for fun. I just wanted to test out hexagon mouse clicking but ended up making a game. There are no plans for any more updates.
+This is just a little strategy game I made for fun. I just wanted to test out hexagon mouse clicking but ended up making a game. There are no plans for any more updates.
 
-This project falls under the MIT license, basically meaning you can do whatever you want with the code and assets.
+![Screenshot of game in current state](screenshot.png)
 
-# License
+This project falls under the MIT license, basically meaning you can do whatever you want with the code and assets, but credit should be given.
+
+## Running the Game
+
+1. Make sure you have JDK 8 installed, with JAVA_HOME pointing to it. NOTE: This project uses an older gradle version that does not support Java 9+
+
+2. Then simply execute the gradle script
+
+```
+$ ./gradlew desktop:run
+```
+
+This game supports Android (tested working). There are also other platforms that can be targeted, but without guarantees of success.
+
+## Downloading the Game
+
+- Desktop (Java): [Download](http://hollowbit.net/vedi0boy/play/hexstrat/hexstrat.jar) (Warning: download starts immediately)
+- Android: [Download App](https://play.google.com/store/apps/details?id=net.hollowbit.strategygame)
+
+## License
 MIT License
 
 Copyright (c) 2016 Nathanael Maher
